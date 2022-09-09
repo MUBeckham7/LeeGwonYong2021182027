@@ -62,14 +62,13 @@ void reverse_sentence(int end) {
 	int store{};
 
 	for (int i = 0; i < end; ++i) {
-		
+
 		if (example[i] == '\n') {
 			store = i;
-			for (i; i >= nextline; i--) {
+			for (i; i >= nextline; --i) {
 				cout << example[i];
-
 			}
-			nextline = store;
+			i = store;
 		}
 	}
 

@@ -51,11 +51,13 @@ int main() {
 	cout << endl;
 
 	while (true) {
+
 		cout << "Input:";
 		cin >> keyword;
 
 
 		if (keyword == 'd') {
+
 			if (d % 2 == 0) {
 				reverse_sentence(end);
 				d = 1;

@@ -63,8 +63,14 @@ GLvoid Reshape(int w, int h) { //--- 콜백 함수: 다시 그리기 콜백 함수
 
 }
 GLvoid Mouse(int button, int state, int x, int y) {
-	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
-		if (ox > x_1 && oy > y_1 && ox < x_2 && oy < y_2) {
+
+		convertDeviceXY2OpenglXY(x, y, &ox, &oy);
+
+	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN ) {
+
+		if ((ox > x_1 && oy > y_1) && (ox < x_2 && oy < y_2)) {
+			cout << "가능";
+
 			r1 = f_rand();
 			r2 = f_rand();
 			r3 = f_rand();
@@ -77,7 +83,8 @@ GLvoid Mouse(int button, int state, int x, int y) {
 	}
 
 	if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN) {
-		if (ox > x_1 && oy > y_1 && ox < x_2 && oy < y_2) {
+
+		if ((ox > x_1 && oy > y_1) && (ox < x_2 && oy < y_2)) {
 			x_1 += 0.01f;
 			y_1 += 0.01f;
 			x_2 -= 0.01f;
@@ -92,7 +99,6 @@ GLvoid Mouse(int button, int state, int x, int y) {
 	}
 
 
-		convertDeviceXY2OpenglXY(x, y, &ox, &oy);
 
 
 

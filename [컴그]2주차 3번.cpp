@@ -11,18 +11,16 @@ GLvoid Reshape(int w, int h);
 GLvoid Mouse(int button, int state, int x, int y);
 void convertDeviceXY2OpenglXY(int x, int y, float* ox, float* oy);
 void Motion(int x, int y);
+void Keyboard(unsigned char key, int x, int y);
 double f_rand(void);
-int screen = 0;
-GLfloat ox;
-GLfloat oy;
-GLfloat R1x1 = -0.1f;
-GLfloat R1y1 = -0.1f;
-GLfloat R1x2 = 0.1f;
-GLfloat R1y2 = 0.1f;
-GLfloat Garo{};
-GLfloat Sero{};
 bool left_button;
-int drag = 0;
+float ox;
+float oy;
+GLfloat x_1 = -0.1f;
+GLfloat y_1 = -0.1f;
+GLfloat x_2 = -0.4f;
+GLfloat y_2 = -0.4f;
+bool a{},b{};
 void main(int argc, char** argv) { //--- 윈도우 출력하고 콜백함수 설정 { //--- 윈도우 생성하기
 	srand((unsigned int)time(NULL));
 
@@ -43,6 +41,7 @@ void main(int argc, char** argv) { //--- 윈도우 출력하고 콜백함수 설정 { //--- �
 		std::cout << "GLEW Initialized\n";
 	glutMouseFunc(Mouse);
 	glutMotionFunc(Motion);
+	glutKeyboardFunc(Keyboard);
 	glutDisplayFunc(drawScene); // 출력 함수의 지정
 	glutReshapeFunc(Reshape); // 다시 그리기 함수 지정
 	glutMainLoop(); // 이벤트 처리 시작
@@ -54,27 +53,55 @@ GLvoid drawScene() {//--- 콜백 함수: 그리기 콜백 함수 { glClearColor( 0.0f, 0.0f
 	glClearColor(0, 0, 0.1f, 0.1f);
 	glClear(GL_COLOR_BUFFER_BIT); // 설정된 색으로 전체를 칠하기
 	glColor3f(1.0f, 1.0f, 1.0f);
-	glRectf(R1x1+Garo, R1y1+Sero, R1x2+Garo, R1y2+Sero);
+	glRectf(x_1,y_1,x_1+0.2f,y_1+0.2f);
+	glColor3f(0.6f, 0.2f, 0);
+	glRectf(x_2, y_2, x_2 + 0.2f, y_2 + 0.2f);
 	// 그리기 부분 구현: 그리기 관련 부분이 여기에 포함된다.
 	glutSwapBuffers(); // 화면에 출력하기
 
 }
 GLvoid Reshape(int w, int h) { //--- 콜백 함수: 다시 그리기 콜백 함수 
 	glViewport(0, 0, w, h);
-
 }
 
 GLvoid Mouse(int button, int state, int x, int y) {
 	convertDeviceXY2OpenglXY(x, y, &ox, &oy);
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
-		if (ox > R1x1 && oy > R1y1 && ox < R1x2 && oy < R1y2) {
-			drag = 1;
+		if (x_1 < ox && ox < x_1 + 0.2f && y_1 < oy && oy < y_1+0.2f) {
 			left_button = true;
-
+			a = true;
+		}
+		if (x_2 < ox && ox < x_2 + 0.2f && y_2 < oy && oy < y_2 + 0.2f) {
+			left_button = true;
+			b = true;
 		}
 	}
+	if (button == GLUT_LEFT_BUTTON && state == GLUT_UP) {
+		a = false;
+		b = false;
 
+	}
 }
+
+void Motion(int x, int y) {
+	convertDeviceXY2OpenglXY(x, y, &ox, &oy);
+	if ( a == true && left_button == true) {
+		//cout << ox << "," << oy <<",";
+		//cout << Garo << "," << Sero << endl;
+	}
+	if (b == true && left_button == true) {
+		cout << "B 가능";
+	}
+}
+
+void Keyboard(unsigned char key, int x, int y) {
+	switch (key) {
+	case 'a':
+			break;
+	}
+}
+
+
 
 
 double f_rand(void) {
@@ -91,31 +118,4 @@ void convertDeviceXY2OpenglXY(int x, int y, float* ox, float* oy)
 	*ox = (float)((x - (float)w / 2.0) * (float)(1.0 / (float)(w / 2.0)));
 	*oy = -(float)((y - (float)h / 2.0) * (float)(1.0 / (float)(h / 2.0)));
 
-}
-
-void Motion(int x, int y) {
-	convertDeviceXY2OpenglXY(x, y, &ox, &oy);
-	if (left_button == true) {
-		//cout << ox << "," << oy <<",";
-		Garo = ox - R1x1;
-		Sero = oy - R1y1;
-
-		if (drag == 1) {
-			GLvoid drawScene(); {//--- 콜백 함수: 그리기 콜백 함수 { glClearColor( 0.0f, 0.0f, 1.0f, 1.0f ); // 바탕색을 ‘blue’ 로 지정
-				glClearColor(0, 0, 0.1f, 0.1f);
-				glClear(GL_COLOR_BUFFER_BIT); // 설정된 색으로 전체를 칠하기
-				glColor3f(1.0f, 1.0f, 1.0f);
-				if (drag == 0)
-					glRectf(R1x1 + Garo, R1y1 + Sero, R1x2 + Garo, R1y2 + Sero);
-
-				if (drag == 1)
-					glRectf(R1x1 + Garo, R1y1 + Sero, R1x2 + Garo, R1y2 + Sero);
-				// 그리기 부분 구현: 그리기 관련 부분이 여기에 포함된다.
-				glutSwapBuffers(); // 화면에 출력하기
-
-			}
-		}
-	
-		//cout << Garo << "," << Sero << endl;
-	}
 }

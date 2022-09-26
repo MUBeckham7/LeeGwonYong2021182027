@@ -20,7 +20,7 @@ void collision_wall_3(GLfloat x, GLfloat y);
 void collision_wall_4(GLfloat x, GLfloat y);
 bool left_button;
 float ox, oy;
-GLfloat x_1, y_1, x_2 , y_2 ,x_3, y_3 ,x_4,y_4,x_5,y_5;
+GLfloat x_1, y_1, x_2, y_2, x_3, y_3, x_4, y_4, x_5, y_5;
 GLfloat temp_x1, temp_y1, temp_x2, temp_y2, temp_x3, temp_y3, temp_x4, temp_y4, temp_x5, temp_y5;
 GLfloat box1_r = f_rand(), box1_g = f_rand(), box1_b = f_rand();
 GLfloat box2_r = f_rand(), box2_g = f_rand(), box2_b = f_rand();
@@ -39,7 +39,7 @@ bool left_x2, right_x2, top_y2, bottom_y2;
 bool left_x3, right_x3, top_y3, bottom_y3;
 bool left_x4, right_x4, top_y4, bottom_y4;
 int count_a{}, count_b{}, count_c{}, count_d{};
-double size_x1 = 1, size_x2 =1 , size_y2=1 , size_y3=1 , size_x4 =1 , size_y4 =1;
+double size_x1 = 1, size_x2 = 1, size_y2 = 1, size_y3 = 1, size_x4 = 1, size_y4 = 1;
 void main(int argc, char** argv) { //--- 윈도우 출력하고 콜백함수 설정 { //--- 윈도우 생성하기
 	srand((unsigned int)time(NULL));
 
@@ -75,11 +75,11 @@ GLvoid drawScene() {//--- 콜백 함수: 그리기 콜백 함수 { glClearColor( 0.0f, 0.0f
 
 	if (a == true) {
 		glColor3f(box1_r, box1_g, box1_b);
-		glRectf(x_1*size_x1, y_1, x_1 + 0.1f, y_1 + 0.1f);
+		glRectf(x_1 * size_x1, y_1, x_1 + 0.1f, y_1 + 0.1f);
 	}
 	if (b == true) {
 		glColor3f(box2_r, box2_g, box2_b);
-		glRectf(x_2*size_x2, y_2*size_y2, x_2 + 0.1f, y_2 + 0.1f);
+		glRectf(x_2 * size_x2, y_2 * size_y2, x_2 + 0.1f, y_2 + 0.1f);
 	}
 	if (c == true) {
 		glColor3f(box3_r, box3_g, box3_b);
@@ -87,7 +87,7 @@ GLvoid drawScene() {//--- 콜백 함수: 그리기 콜백 함수 { glClearColor( 0.0f, 0.0f
 	}
 	if (d == true) {
 		glColor3f(box4_r, box4_g, box4_b);
-		glRectf(x_4, y_4, (x_4 + 0.1f)*size_x4, (y_4 + 0.1f)*size_y4);
+		glRectf(x_4, y_4, (x_4 + 0.1f) * size_x4, (y_4 + 0.1f) * size_y4);
 	}
 	if (e == true) {
 		glColor3f(box5_r, box5_g, box5_b);
@@ -104,7 +104,7 @@ GLvoid Reshape(int w, int h) { //--- 콜백 함수: 다시 그리기 콜백 함수
 
 GLvoid Mouse(int button, int state, int x, int y) {
 	convertDeviceXY2OpenglXY(x, y, &ox, &oy);
-	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {		
+	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
 		cout << ox << "," << oy << endl;
 		box_count++;
 		if (box_count == 1) {
@@ -187,6 +187,7 @@ void Keyboard(unsigned char key, int x, int y) {
 		break;
 	case 'r':
 		a = false, b = false, c = false, d = false, e = false;
+		size_x1 = 1, size_x2 = 1, size_y2 = 1, size_y3 = 1, size_x4 = 1, size_y4 = 1;
 		box_count = 0;
 		break;
 	case 'q':
@@ -431,7 +432,7 @@ void TimerFunction(int value) {
 	//--------------------------각 개체 지그재그 이동
 
 	if (key_c == true) {
-		
+
 		if (a == true) {
 			size_x1 += 0.01;
 		}
@@ -528,8 +529,8 @@ void TimerFunction(int value) {
 	}
 	//--------------------------각 개체 원 위치 이동
 
-		glutPostRedisplay();
-		glutTimerFunc(100, TimerFunction, 1);
+	glutPostRedisplay();
+	glutTimerFunc(100, TimerFunction, 1);
 
 }
 
@@ -537,7 +538,7 @@ void TimerFunction(int value) {
 void collision_wall_1(GLfloat x, GLfloat y) {
 
 	if (x < -1) {
-		wall_top1= false ,wall_right1 = false, wall_bottom1 = false ,wall_left1 = true;
+		wall_top1 = false, wall_right1 = false, wall_bottom1 = false, wall_left1 = true;
 	}
 	if (y < -1) {
 		wall_top1 = false, wall_right1 = false, wall_bottom1 = true, wall_left1 = false;
@@ -598,5 +599,3 @@ void collision_wall_4(GLfloat x, GLfloat y) {
 	}
 
 }
-
-

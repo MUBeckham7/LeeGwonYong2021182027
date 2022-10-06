@@ -1,10 +1,10 @@
-#include <iostream>
-
 #define _CRT_SECURE_NO_WARNINGS
 
 #pragma comment (lib,"freeglut.lib")
-#pragma commet (lib,"glew32.lib")
-
+#pragma comment (lib,"glew32.lib")
+#include <iostream>
+#include <stdlib.h>
+#include <stdio.h>
 #include <gl/glew.h> //--- 필요한 헤더파일 include
 #include <gl/freeglut.h>
 #include <gl/freeglut_ext.h>
@@ -23,7 +23,16 @@ double f_rand(void);
 bool left_button;
 float ox, oy;
 GLfloat x_1, y_1;
+GLint width, height;
 
+char* filetobuf(const char* file);
+GLuint vertexShader;
+GLuint fragmentShader;
+GLuint shaderProgram;
+
+void make_vertexShader();
+void make_FragmentShader();
+void make_shaderProgram();
 
 void main(int argc, char** argv) { //--- 윈도우 출력하고 콜백함수 설정 { //--- 윈도우 생성하기
 	srand((unsigned int)time(NULL));
@@ -43,6 +52,11 @@ void main(int argc, char** argv) { //--- 윈도우 출력하고 콜백함수 설
 	}
 	else
 		std::cout << "GLEW Initialized\n";
+
+	make_vertexShader();
+	make_FragmentShader();
+	make_shaderProgram();
+
 	glutMouseFunc(Mouse);
 	glutMotionFunc(Motion);
 	glutKeyboardFunc(Keyboard);
@@ -59,6 +73,10 @@ GLvoid drawScene() {//--- 콜백 함수: 그리기 콜백 함수 { glClearColor(
 	glClear(GL_COLOR_BUFFER_BIT); // 설정된 색으로 전체를 칠하기
 
 
+	glPointSize(10.0);
+	glUseProgram(shaderProgram);
+	glDrawArrays(GL_POINTS, 0, 1);
+
 	// 그리기 부분 구현: 그리기 관련 부분이 여기에 포함된다.
 	glutSwapBuffers(); // 화면에 출력하기
 
@@ -70,8 +88,8 @@ GLvoid Reshape(int w, int h) { //--- 콜백 함수: 다시 그리기 콜백 함�
 GLvoid Mouse(int button, int state, int x, int y) {
 	convertDeviceXY2OpenglXY(x, y, &ox, &oy);
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
-		
-		
+
+
 	}
 
 }
@@ -109,4 +127,82 @@ void TimerFunction(int value) {
 	glutPostRedisplay();
 	glutTimerFunc(100, TimerFunction, 1);
 
+}
+
+void make_vertexShader() {
+	GLchar* vertexSource;
+
+
+	vertexSource = filetobuf("vertex.glsl");
+	vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(vertexShader, 1, &vertexSource, NULL);
+	glCompileShader(vertexShader);
+
+	GLint result;
+	GLchar errorLog[512];
+	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &result);
+	if (!result) {
+		glGetShaderInfoLog(vertexShader, 512, NULL, errorLog);
+		cerr << "ERROR: vertex shader 컴파일 실패\n" << errorLog << endl;
+		return;
+	}
+}
+
+void make_FragmentShader() {
+	GLchar* fragmentSource;
+
+
+	fragmentSource = filetobuf("fragment.glsl");
+	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fragmentShader, 1, &fragmentSource, NULL);
+	glCompileShader(fragmentShader);
+
+	GLint result;
+	GLchar errorLog[512];
+	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &result);
+	if (!result) {
+		glGetShaderInfoLog(fragmentShader, 512, NULL, errorLog);
+		cerr << "ERROR: vertex shader 컴파일 실패\n" << errorLog << endl;
+		return;
+	}
+}
+
+void make_shaderProgram() {
+	shaderProgram = glCreateProgram();
+
+	glAttachShader(shaderProgram, vertexShader);
+	glAttachShader(shaderProgram, fragmentShader);
+	glLinkProgram(shaderProgram);
+
+	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShader);
+
+	GLint result;
+	GLchar errorLog[512];
+	glGetShaderiv(shaderProgram, GL_LINK_STATUS, &result);
+	if (!result) {
+		glGetProgramInfoLog(shaderProgram, 512, NULL, errorLog);
+		cerr << "ERROR: vertex shader 컴파일 실패\n" << errorLog << endl;
+		return;
+	}
+
+	glUseProgram(shaderProgram);
+}
+
+char* filetobuf(const char* file)
+{
+	FILE* fptr;
+	long length;
+	char* buf;
+	fptr = fopen(file, "rb"); // Open file for reading 
+	if (!fptr) // Return NULL on failure 
+		return NULL;
+	fseek(fptr, 0, SEEK_END); // Seek to the end of the file 
+	length = ftell(fptr); // Find out how many bytes into the file we are 
+	buf = (char*)malloc(length + 1); // Allocate a buffer for the entire length of the file and a null terminator 
+	fseek(fptr, 0, SEEK_SET); // Go back to the beginning of the file 
+	fread(buf, length, 1, fptr); // Read the contents of the file in to the buffer 
+	fclose(fptr); // Close the file 
+	buf[length] = 0; // Null terminator 
+	return buf; // Return the buffer 
 }

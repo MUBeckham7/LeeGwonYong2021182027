@@ -3,7 +3,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #pragma comment (lib,"freeglut.lib")
-#pragma commet (lib,"glew32.lib")
+#pragma comment (lib,"glew32.lib")
 
 #include <gl/glew.h> //--- 필요한 헤더파일 include
 #include <gl/freeglut.h>

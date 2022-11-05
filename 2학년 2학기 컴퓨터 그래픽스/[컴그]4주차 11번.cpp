@@ -108,7 +108,7 @@ GLvoid Mouse(int button, int state, int x, int y) {
 			left_button = true, third_drag = true;
 		if (x_4 - 0.2f < ox && ox < x_4 + 0.2f && y_4 - 0.2f < oy && oy < y_4 + 0.2f)
 			left_button = true, fourth_drag = true;
-		if (x_2 + 0.2f < ox && ox < x_1 - 0.2f && x_3 + 0.2f && x_4 - 0.2f && y_3 + 0.2f < oy && oy < y_2 - 0.2f && y_4 + 0.2f < oy && oy < y_1 - 0.2f) {
+		if (x_2 + 0.2f <= ox && ox <= x_1 - 0.2f && x_3 + 0.2f<=ox && ox<=x_4 - 0.2f && y_3 + 0.2f < oy && oy < y_2 - 0.2f && y_4 + 0.2f < oy && oy < y_1 - 0.2f) {
 			left_button = true, big_drag = true;
 			if (temp == 0) {
 				tempx = ox;

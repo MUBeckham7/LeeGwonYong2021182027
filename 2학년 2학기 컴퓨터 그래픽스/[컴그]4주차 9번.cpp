@@ -114,6 +114,9 @@ void Motion(int x, int y) {
 }
 void Keyboard(unsigned char key, int x, int y) {
 	switch (key) {
+	case 'l':
+
+		break;
 	}
 }
 double f_rand(void) {
@@ -150,7 +153,7 @@ void DrawCircle(int x, int y, int rad, int degree, int check, double tmpX, doubl
 	glColor3f(1.0f, 1.0f, 1.0f);
 
 	glPointSize(3.0);
-	glBegin(GL_POINTS);
+	glBegin(GL_LINE_LOOP);
 
 	for (int i = 0; i < degree; ++i)
 	{

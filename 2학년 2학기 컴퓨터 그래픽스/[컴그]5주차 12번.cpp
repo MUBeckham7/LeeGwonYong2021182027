@@ -27,7 +27,7 @@ GLfloat x_1, y_1;
 void main(int argc, char** argv) { //--- 윈도우 출력하고 콜백함수 설정 { //--- 윈도우 생성하기
 	srand((unsigned int)time(NULL));
 	glutInit(&argc, argv); // glut 초기화
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA); // 디스플레이 모드 설정
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH); // 디스플레이 모드 설정
 	glutInitWindowPosition(100, 100); // 윈도우의 위치 지정
 	glutInitWindowSize(800, 600); // 윈도우의 크기 지정
 	glutCreateWindow("Example1"); // 윈도우 생성(윈도우 이름)
@@ -51,7 +51,8 @@ void main(int argc, char** argv) { //--- 윈도우 출력하고 콜백함수 설정 { //--- �
 }
 GLvoid drawScene() {//--- 콜백 함수: 그리기 콜백 함수 { glClearColor( 0.0f, 0.0f, 1.0f, 1.0f ); // 바탕색을 ‘blue’ 로 지정
 	glClearColor(0, 0, 0.1f, 0.1f);
-	glClear(GL_COLOR_BUFFER_BIT); // 설정된 색으로 전체를 칠하기
+	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT); // 설정된 색으로 전체를 칠하기
+	glEnable(GL_DEPTH_TEST);
 	glColor3f(1.0f, 1.0f, 1.0f);
 	glBegin(GL_LINES);
 	glVertex3f(0, 300, 0);
@@ -61,21 +62,35 @@ GLvoid drawScene() {//--- 콜백 함수: 그리기 콜백 함수 { glClearColor( 0.0f, 0.0f
 	glEnd();
 
 	glPushMatrix();
-	glRotatef(20, 1, 1, 0);
+	glRotatef(0.0f, 1.0f, 1.0f, 0.0f);
 
-	if (one == true) {
-		glColor3f(0.7f, 0.5f, 0.2f);
-		glBegin(GL_QUADS);					//정육면체 아랫면
-		glVertex3f(-100, -150, 0);
+	glutSolidCube(1.2f);
+	if (six == true) {
+		glColor3f(0.0f, 0.0f, 0.2f);
+		glBegin(GL_QUADS);					//정육면체 앞쪽
 		glVertex3f(-170, -220, 0);
 		glVertex3f(30, -220, 0);
-		glVertex3f(100, -150, 0);
+		glVertex3f(30, 150, 0);
+		glVertex3f(-170, 150, 0);
+		glEnd();
+		glColor3f(1.0f, 1.0f, 1.0f);
+		glBegin(GL_LINE_LOOP);
+		glVertex3f(-170, -220, 0);
+		glVertex3f(30, -220, 0);
+		glVertex3f(30, 150, 0);
+		glVertex3f(-170, 150, 0);
 		glEnd();
 	}
-
 	if (two == true) {
 		glColor3f(0.3f, 0.1f, 0.9f);
 		glBegin(GL_QUADS);					//정육면체 윗면
+		glVertex3f(-170, 150, 0);
+		glVertex3f(-100, 220, 0);
+		glVertex3f(100, 220, 0);
+		glVertex3f(30, 150, 0);
+		glEnd();
+		glColor3f(1.0f, 1.0f, 1.0f);
+		glBegin(GL_LINE_LOOP);
 		glVertex3f(-170, 150, 0);
 		glVertex3f(-100, 220, 0);
 		glVertex3f(100, 220, 0);
@@ -90,11 +105,24 @@ GLvoid drawScene() {//--- 콜백 함수: 그리기 콜백 함수 { glClearColor( 0.0f, 0.0f
 		glVertex3f(100, 220, 0);
 		glVertex3f(30, 150, 0);
 		glEnd();
-	}
-
+		glColor3f(1.0f, 1.0f, 1.0f);
+		glBegin(GL_LINE_LOOP);
+		glVertex3f(30, -220, 0);
+		glVertex3f(100, -150, 0);
+		glVertex3f(100, 220, 0);
+		glVertex3f(30, 150, 0);
+		glEnd();
+	}	
 	if (four == true) {
 		glColor3f(0.1f, 0.7f, 0.8f);
 		glBegin(GL_QUADS);					//정육면체 왼쪽
+		glVertex3f(-100, -150, 0);
+		glVertex3f(-170, -220, 0);
+		glVertex3f(-170, 150, 0);
+		glVertex3f(-100, 220, 0);
+		glEnd();
+		glColor3f(1.0f, 1.0f, 1.0f);
+		glBegin(GL_LINE_LOOP);
 		glVertex3f(-100, -150, 0);
 		glVertex3f(-170, -220, 0);
 		glVertex3f(-170, 150, 0);
@@ -109,19 +137,54 @@ GLvoid drawScene() {//--- 콜백 함수: 그리기 콜백 함수 { glClearColor( 0.0f, 0.0f
 		glVertex3f(100, 220, 0);
 		glVertex3f(-100, 220, 0);
 		glEnd();
-	}
-	if (six == true) {
-		glColor3f(0.0f, 0.0f, 0.2f);
-		glBegin(GL_QUADS);					//정육면체 앞쪽
-		glVertex3f(-170, -220, 0);
-		glVertex3f(30, -220, 0);
-		glVertex3f(30, 150, 0);
-		glVertex3f(-170, 150, 0);
+		glColor3f(1.0f, 1.0f, 1.0f);
+		glBegin(GL_LINE_LOOP);
+		glVertex3f(-100, -150, 0);
+		glVertex3f(100, -150, 0);
+		glVertex3f(100, 220, 0);
+		glVertex3f(-100, 220, 0);
 		glEnd();
 	}
+	if (one == true) {
+		glColor3f(0.7f, 0.5f, 0.2f);
+		glBegin(GL_QUADS);					//정육면체 아랫면
+		glVertex3f(-100, -150, 0);
+		glVertex3f(-170, -220, 0);
+		glVertex3f(30, -220, 0);
+		glVertex3f(100, -150, 0);
+		glEnd();
+		glColor3f(1.0f, 1.0f, 1.0f);
+		glBegin(GL_LINE_LOOP);
+		glVertex3f(-100, -150, 0);
+		glVertex3f(-170, -220, 0);
+		glVertex3f(30, -220, 0);
+		glVertex3f(100, -150, 0);
+		glEnd();
+	}
+	if (ten == true) {
+		glColor3f(0.0f, 0.9f, 0.9f);
+		glBegin(GL_TRIANGLES);					//정육면체 앞쪽
+		glVertex3f(0, 50, 0);
+		glVertex3f(150, -100, 0);
+		glVertex3f(-100, -250, 0);
+		glEnd();
+		glColor3f(1.0f, 1.0f, 1.0f);
+		glBegin(GL_LINE_LOOP);
+		glVertex3f(0, 50, 0);
+		glVertex3f(150, -100, 0);
+		glVertex3f(-100, -250, 0);
+		glEnd();
+	}
+
 	if (seven == true) {
 		glColor3f(0.9f, 0.9f, 0.2f);
 		glBegin(GL_TRIANGLES);					//정사면체 아랫쪽
+		glVertex3f(0, -100, 0);
+		glVertex3f(150, -100, 0);
+		glVertex3f(-100, -250, 0);
+		glEnd();
+		glColor3f(1.0f, 1.0f, 1.0f);
+		glBegin(GL_LINE_LOOP);
 		glVertex3f(0, -100, 0);
 		glVertex3f(150, -100, 0);
 		glVertex3f(-100, -250, 0);
@@ -134,6 +197,12 @@ GLvoid drawScene() {//--- 콜백 함수: 그리기 콜백 함수 { glClearColor( 0.0f, 0.0f
 		glVertex3f(-100, -250, 0);
 		glVertex3f(0, 50, 0);
 		glEnd();
+		glColor3f(1.0f, 1.0f, 1.0f);
+		glBegin(GL_LINE_LOOP);
+		glVertex3f(0, -100, 0);
+		glVertex3f(-100, -250, 0);
+		glVertex3f(0, 50, 0);
+		glEnd();
 	}
 	if (nine == true) {
 		glColor3f(0.8f, 0.0f, 0.6f);
@@ -142,20 +211,20 @@ GLvoid drawScene() {//--- 콜백 함수: 그리기 콜백 함수 { glClearColor( 0.0f, 0.0f
 		glVertex3f(0, 50, 0);
 		glVertex3f(150, -100, 0);
 		glEnd();
-	}
-	if (ten == true) {
-		glColor3f(0.0f, 0.9f, 0.9f);
-		glBegin(GL_TRIANGLES);					//정육면체 앞쪽
+		glColor3f(1.0f, 1.0f, 1.0f);
+		glBegin(GL_LINE_LOOP);
+		glVertex3f(0, -100, 0);
 		glVertex3f(0, 50, 0);
 		glVertex3f(150, -100, 0);
-		glVertex3f(-100, -250, 0);
 		glEnd();
 	}
 
 
 	glPopMatrix();
 	// 그리기 부분 구현: 그리기 관련 부분이 여기에 포함된다.
+
 	glutSwapBuffers(); // 화면에 출력하기
+	glDisable(GL_DEPTH_TEST);
 }
 GLvoid Reshape(int w, int h) { //--- 콜백 함수: 다시 그리기 콜백 함수
 	GLdouble nRange = 300.0f;
@@ -163,8 +232,8 @@ GLvoid Reshape(int w, int h) { //--- 콜백 함수: 다시 그리기 콜백 함수
 
 	glViewport(0, 0, w, h);
 
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
+	//glMatrixMode(GL_PROJECTION);
+	//glLoadIdentity();
 
 	if (w <= h) {
 		glOrtho(-nRange, nRange, -nRange*h/w, nRange*h/w, -nRange,nRange);
@@ -172,8 +241,8 @@ GLvoid Reshape(int w, int h) { //--- 콜백 함수: 다시 그리기 콜백 함수
 	else
 		glOrtho(-nRange * h / w, nRange * h / w, -nRange , nRange , -nRange, nRange);
 
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
+	//glMatrixMode(GL_MODELVIEW);
+	//glLoadIdentity();
 
 }
 GLvoid Mouse(int button, int state, int x, int y) {

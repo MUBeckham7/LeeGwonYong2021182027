@@ -1,7 +1,0 @@
-class EVENT:
-    A, B = range(2)
-    pass
-
-
-
-

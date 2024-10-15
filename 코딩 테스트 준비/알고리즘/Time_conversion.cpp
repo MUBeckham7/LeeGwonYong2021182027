@@ -20,7 +20,7 @@ string timeConversion(string s) {
         }
     }
     else {
-        if (hour != 12) {
+        if (hour < 12) {
             hour += 12;
             s.replace(0, 2, to_string((hour)));
         }

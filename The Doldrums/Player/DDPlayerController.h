@@ -1,0 +1,31 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "GameFramework/PlayerController.h"
+#include "DDPlayerController.generated.h"
+
+/**
+ * 
+ */
+UCLASS()
+class THEDOLDRUMS_API ADDPlayerController : public APlayerController
+{
+	GENERATED_BODY()
+
+public:
+
+	ADDPlayerController();
+
+protected:
+	virtual void BeginPlay() override;
+
+public:
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	TObjectPtr<class USkeletalMeshComponent> BagMeshPart1;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	TObjectPtr<class USkeletalMeshComponent> BagMeshPart2;
+};

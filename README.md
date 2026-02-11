@@ -35,6 +35,8 @@
 ### 🚀 Result
 - 환경 장애물을 인식하여 객체의 위치선정 능력 향상
 
+<img width="725" height="346" alt="image" src="https://github.com/user-attachments/assets/c51a83c2-4ea5-4535-816d-57919807a868" />
+
 ---
 
 ## 🌫 Volumetric Fog를 대체하기 위한 HLSL을 기반으로 한 Fog 제작

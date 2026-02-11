@@ -124,7 +124,7 @@ LeeGwonYong2021182027\The Doldrums,Unreal5,C++\Prop\DDGeneratedDynamicMeshActorL
 
 ---
 
-# 🛠 Technical Skills
+# 🛠 기술 스택
 
 ### Engine
 - Unreal Engine 5
@@ -142,8 +142,3 @@ LeeGwonYong2021182027\The Doldrums,Unreal5,C++\Prop\DDGeneratedDynamicMeshActorL
 - Ray–Sphere Intersection Mathematics
 
 ---
-
-# 🚀 Goal
-
-To become a developer who understands the engine deeply  
-and solves structural problems that arise during game development.

@@ -54,6 +54,8 @@ WithMyAlly,Unreal,C++\Source\WMA\Shader\PPmaterialFog.usf
 
 ### 🛠 Solution
 - Noise Texture를 다중으로 겹처 안개를 다층적으로 표현
+  
+<img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/3e05cc83-f228-4c55-9479-75e428e00d21" />
 
 ### 🔎 Problem
 - 캐릭터가 안개를 거닐때 안개가 카메라를 따라 이동해오는 문제 발생

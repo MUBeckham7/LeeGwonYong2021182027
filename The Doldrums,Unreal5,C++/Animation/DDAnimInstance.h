@@ -62,5 +62,8 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category = Character)
 	uint8 bGrabbedBranch : 1;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character)
+	uint8 bGrabbedTorch : 1;
+
 
 };

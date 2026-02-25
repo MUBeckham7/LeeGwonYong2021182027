@@ -9,6 +9,8 @@
 /**
  * 
  */
+class ADDPalm;
+
 UCLASS()
 class THEDOLDRUMS_API ADDPalmTree : public ADDInteractionItem 
 {
@@ -21,18 +23,14 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	virtual void Tick(float DeltaSeconds) override;
+
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Mesh)
 	TObjectPtr<class UStaticMeshComponent> Body;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Mesh)
-	TObjectPtr<class UStaticMeshComponent> Fruit;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Box)
 	TObjectPtr<class UBoxComponent>TriggerTree;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Box)
-	TObjectPtr<class UBoxComponent>TriggerFruit;
 
 	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = Widget, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UWidgetComponent> Text;
@@ -43,6 +41,12 @@ public:
 
 	AActor* PlayerActor;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<ADDPalm> PalmClass;
+
+
+
+
 protected:
 
 	UFUNCTION()
@@ -51,11 +55,32 @@ protected:
 	UFUNCTION()
 	void OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-	UFUNCTION()
-	void OnOverlapBeginFruit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepHitResult);
-
 public:
 
 	void OnInteract();
+
+	void FallFruit();
+
+	void GenerateRandomSpawnSchedule();
+
+	void SpawnPalm();
+
+	UPROPERTY()
+	TObjectPtr<class ADDCharacterBase> CachedPlayer;
+
+	int32 AccumulateDays = 0;
+	float CurrentTime = 0.0f;
+	float PreviousTime = -1.0f;
+
+	TArray<int32> SpawnDays;
+	int32 GeneratedThisYear = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 MaxPalmPerYear = 12;
+
+
+	TDoubleLinkedList<ADDPalm*> CoconutList;
+
+
 
 };

@@ -22,9 +22,13 @@
 #include <Item/DDEquipClothBag.h>
 #include <Item/DDItemWaterBottle.h>
 #include <Item/DDItemAxe.h>
+#include <Item/DDItemMachete.h>
+#include <Item/DDItemTorch.h>
+#include <Item/DDPalm.h>
 #include <Prop/DDGrassOne.h>
 #include <Prop/DDGeneratedDynamicMeshActorLog.h>
 #include <Item/DDGeneratedDynamicMeshFlint.h>
+#include <Niagara/DDFireActor.h>
 #include "Animation/DDAnimInstance.h"
 #include "TimerManager.h"
 #include "Components/WidgetComponent.h"
@@ -32,6 +36,7 @@
 #include "Item/DDEquipmentItemData.h"
 #include "State/DDPlayerState.h"
 #include "NarrativeItem.h"
+#include "CharacterComponent/DDCharacterStatComponent.h"
 
 ADDCharacterPlayer::ADDCharacterPlayer()
 {
@@ -49,7 +54,7 @@ ADDCharacterPlayer::ADDCharacterPlayer()
 	MovieCamera = CreateDefaultSubobject<UCineCameraComponent>(TEXT("MovieCam"));
 	MovieCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 
-
+	DroppedItemC = nullptr;
 
 	MovieCamera->bUsePawnControlRotation = false;
 
@@ -57,8 +62,6 @@ ADDCharacterPlayer::ADDCharacterPlayer()
 
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
-
-
 
 	static ConstructorHelpers::FObjectFinder<UInputAction> ShoulderRunActionControlRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/Actions/IA_ShoulderRun.IA_ShoulderRun'"));
 	if (nullptr != ShoulderRunActionControlRef.Object)
@@ -155,11 +158,16 @@ void ADDCharacterPlayer::BeginPlay()
 	InitialControlRotation = Controller->GetControlRotation();
 
 
-
 }
 
 void ADDCharacterPlayer::Tick(float DeltaSeconds)
 {
+
+	Super::Tick(DeltaSeconds);
+
+	//Stat->DecreaseHungerStat(1.0f);
+	//Stat->DecreaseThirstStat(1.0f);
+
 	if (bIsReturningToDefaultRotation)	// 캐릭터의 등뒤로 돌아가는 카메라 무빙
 	{			
 		GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
@@ -381,6 +389,28 @@ void ADDCharacterPlayer::InterActionFun(const FInputActionValue& Value)
 				CurrentInventoryItemClass = Branch->ItemDDBranchClass;
 
 			}
+			else if (TmpActor->IsA(ADDItemTorch::StaticClass()))
+			{
+				ADDItemTorch* Torch = Cast<ADDItemTorch>(TmpActor);
+				Torch->OnInteract();
+
+				if (UDDAnimInstance* AnimInstance = Cast<UDDAnimInstance>(BodyMesh->GetAnimInstance()))
+				{
+					AnimInstance->bGrabbedTorch = true;
+				}
+
+				CurrentInventoryItemClass = Torch->ItemDDTorchClass;
+
+			}
+			else if (TmpActor->IsA(ADDItemMachete::StaticClass()))
+			{
+				ADDItemMachete* Machete = Cast<ADDItemMachete>(TmpActor);
+				Machete->OnInteract();
+
+				
+				CurrentInventoryItemClass = Machete->ItemDDMacheteClass;
+
+			}
 			else if (ADDGeneratedDynamicMeshFlint* Flint = Cast<ADDGeneratedDynamicMeshFlint>(TmpActor))
 			{
 				if (UDDAnimInstance* AnimInstance = Cast<UDDAnimInstance>(BodyMesh->GetAnimInstance()))
@@ -411,7 +441,7 @@ void ADDCharacterPlayer::InterActionFun(const FInputActionValue& Value)
 			else if (TmpActor->IsA(ADDGrassOne::StaticClass()))
 			{
 				ADDGrassOne* Grass = Cast<ADDGrassOne>(TmpActor);
-				if (EquipmentNow == EItemType::WaterBottle)
+				if (EquipmentNow == EItemType::WaterBottle && UDSTime>500.0f &&UDSTime<850.0f)
 				{
 					if (UDDAnimInstance* AnimInstance = Cast<UDDAnimInstance>(BodyMesh->GetAnimInstance()))
 					{
@@ -438,6 +468,28 @@ void ADDCharacterPlayer::InterActionFun(const FInputActionValue& Value)
 			{
 				ADDItemAxe* Axe = Cast<ADDItemAxe>(TmpActor);
 				Axe->OnInteract();
+			}
+			else if (TmpActor->IsA(ADDFireActor::StaticClass()))
+			{
+
+				switch (EquipmentNow) {
+					case EItemType::Torch:
+
+						if (UDDAnimInstance* AnimInstance = Cast<UDDAnimInstance>(BodyMesh->GetAnimInstance()))
+						{
+							AnimInstance->Montage_Play(BornFireTorchMontage);
+						}
+
+					break;
+
+				}
+			}
+			else if (TmpActor->IsA(ADDPalm::StaticClass()))
+			{
+				ADDPalm* Palm = Cast<ADDPalm>(TmpActor);
+				Palm->OnInteract();
+
+				CurrentInventoryItemClass = Palm->ItemDDPalmClass;
 			}
 
 		}
@@ -501,6 +553,8 @@ void ADDCharacterPlayer::UseItem(const FInputActionValue& Value)
 			GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
 
 			AnimInstance->Montage_Play(DrinkWaterMontage);
+
+			
 		}
 		break;
 	case EItemType::Axe:
@@ -578,6 +632,14 @@ void ADDCharacterPlayer::DropItem(const FInputActionInstance& Instance)
 				}
 
 			}
+
+			if (UDDAnimInstance* AnimInstance = Cast<UDDAnimInstance>(BodyMesh->GetAnimInstance()))
+			{
+				AnimInstance->bGrabbedBranch = false;
+			}
+
+
+
 			EquipmentBranch->SetStaticMesh(nullptr);
 
 			// 인벤토리/상태 초기화
@@ -699,14 +761,13 @@ void ADDCharacterPlayer::DropItem(const FInputActionInstance& Instance)
 
 void ADDCharacterPlayer::LeftMouseClick(const FInputActionInstance& Instance)
 {
-	UE_LOG(LogTemp, Warning, TEXT("LeftMouseClick"));
+
 }
 
 
 void ADDCharacterPlayer::ResetWheelCount()
 {
 	WheelCount = 0;
-	UE_LOG(LogTemp, Warning, TEXT("WheelCount = %d"), WheelCount);
 
 	if (UDDAnimInstance* AnimInstance = Cast<UDDAnimInstance>(BodyMesh->GetAnimInstance()))
 	{
@@ -719,10 +780,8 @@ void ADDCharacterPlayer::ResetWheelCount()
 			GetOverlappingActors(Result, AActor::StaticClass());
 			for (auto TmpActor : Result)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("FuckNotifty"));
 				if (ADDGeneratedDynamicMeshFlint* Log = Cast<ADDGeneratedDynamicMeshFlint>(TmpActor))
 				{
-					UE_LOG(LogTemp, Warning, TEXT("Fuck3"));
 					Log->DynamicMeshComp->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
 					Log->DynamicMeshComp->SetNotifyRigidBodyCollision(true);
 					Log->DynamicMeshComp->SetGenerateOverlapEvents(true);

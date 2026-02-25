@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "Interface/DDCharacterItemInterface.h"
 #include "Item/DDItemDataAsset.h"
+#include "Interface/DDCharacterWidgetInterface.h"
 #include "DDCharacterBase.generated.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogDDCharacter, Log, All);
@@ -29,7 +30,7 @@ struct FTakeItemDelegateWrapper
 };
 
 UCLASS()
-class THEDOLDRUMS_API ADDCharacterBase : public ACharacter , public IDDCharacterItemInterface
+class THEDOLDRUMS_API ADDCharacterBase : public ACharacter , public IDDCharacterItemInterface , public IDDCharacterWidgetInterface
 {
 	GENERATED_BODY()
 
@@ -37,8 +38,12 @@ public:
 	// Sets default values for this character's properties
 	ADDCharacterBase();
 
+	virtual void PostInitializeComponents() override;
+
 protected:
 	virtual void BeginPlay() override;
+
+	virtual void Tick(float DeltaSeconds) override;
 
 public:
 
@@ -66,6 +71,7 @@ public:
 	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	//TObjectPtr<class USkeletalMeshComponent> Torso;
 
+
 protected:
 	virtual void SetCharacterControlData(const class UDDCharacterControlData* CharacterControlData);
 
@@ -87,6 +93,9 @@ protected:
 	virtual void EquipClothWatch(class UDDItemDataAsset* InItemData);
 	virtual void EquipClothBag(class UDDItemDataAsset* InItemData);
 	virtual void EquipAxe(class UDDItemDataAsset* InItemData);
+	virtual void EquipTorch(class UDDItemDataAsset* InItemData);
+	virtual void EquipMachete(class UDDItemDataAsset* InItemData);
+	virtual void EquipPalm(class UDDItemDataAsset* InItemData);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Equipment)
 	EItemType EquipmentNow;
@@ -118,6 +127,55 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Equipment, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UStaticMeshComponent> EquipmentAxe;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Equipment, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UStaticMeshComponent> EquipmentTorchBody;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Equipment, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UStaticMeshComponent> EquipmentTorchPartC;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Equipment, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UStaticMeshComponent> EquipmentTorchPartL;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Equipment, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UStaticMeshComponent> EquipmentMachete;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Equipment, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UStaticMeshComponent> EquipmentFoodPalm;
+
+protected:
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category = Stat, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UDDCharacterStatComponent> Stat;
+
+
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Widget, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UDDWidgetComponent> HungerStat;
+
+	TSubclassOf<UUserWidget> CharacterStatWidgetClass;
+
+	UUserWidget* CharacterStatWidget;
+
+	virtual void SetupHungerCharacterWidget(class UDDUserWidget* InUserWidget) override;
+	virtual void SetupThirstCharacterWidget(class UDDUserWidget* InUserWidget) override;
+
+
+
+public:
+	void SetDead();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Time")
+	bool bIsInDesiredTimeRange = false;
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category = "Time")
+	float UDSTime = 0;
+
+	UPROPERTY(BlueprintReadWrite,Category = "Item")
+	TSubclassOf<AActor> DroppedItemC;
+
+protected:
+	UFUNCTION(BlueprintCallable, Category = "Drop|Equipment")
+	void DropItemAndClearEquippedMesh(const AActor* DI);
 
 
 };

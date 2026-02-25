@@ -2,8 +2,11 @@
 
 
 #include "Niagara/DDFireActor.h"
+#include "Collision/DDCollision.h"
 #include "Niagara/DDHeterogeneousSmokeComponent.h"
 #include "Character/DDCharacterPlayer.h"
+#include "Components/BoxComponent.h"
+#include "Components/WidgetComponent.h"
 
 // Sets default values
 ADDFireActor::ADDFireActor()
@@ -11,10 +14,19 @@ ADDFireActor::ADDFireActor()
     PrimaryActorTick.bCanEverTick = true;
 
     RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
-
+    TriggerFire = CreateDefaultSubobject<UBoxComponent>(TEXT("TriggerFire"));
+    Text = CreateDefaultSubobject<UWidgetComponent>(TEXT("Text"));
     // NiagaraComponent 생성·부착, 자동 재생 끔
     FireComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("FireComponent"));
-    FireComponent->SetupAttachment(RootComponent);
+
+    TriggerFire->SetupAttachment(RootComponent);
+
+    TriggerFire->SetCollisionProfileName(CPROFILE_DDTRIGGER);
+    TriggerFire->SetBoxExtent(FVector(80.f, 80.f, 80.f));
+    TriggerFire->OnComponentBeginOverlap.AddDynamic(this, &ADDFireActor::OnOverlapBegin);
+    TriggerFire->OnComponentEndOverlap.AddDynamic(this, &ADDFireActor::OnOverlapEnd);
+
+    FireComponent->SetupAttachment(TriggerFire);
     FireComponent->bAutoActivate = false;
 
     // (선택) 기본 에셋 경로 지정
@@ -25,6 +37,15 @@ ADDFireActor::ADDFireActor()
 
         FireComponent->SetAsset(FireSystem);
     }
+
+    static ConstructorHelpers::FClassFinder<UUserWidget>InputE(TEXT("/Game/Widget/WBP_Interact.WBP_Interact_C"));
+    if (InputE.Succeeded())
+    {
+        InteractionItemWidgetClass = InputE.Class;
+    }
+
+
+
 
     StartScale = FVector(1.0f, 1.0f, 0.02f);
     EndScale = FVector(1.0f, 1.0f, 1.0f);
@@ -45,7 +66,16 @@ void ADDFireActor::BeginPlay()
 {
 	Super::BeginPlay();
 
-    // BeginPlay 시 에셋을 컴포넌트에 설정
+    if (InteractionItemWidgetClass)
+    {
+        ItemWidget = CreateWidget<UUserWidget>(GetWorld(), InteractionItemWidgetClass);
+        if (ItemWidget)
+        {
+            ItemWidget->AddToViewport();
+            ItemWidget->SetVisibility(ESlateVisibility::Hidden);
+        }
+
+    }
 
 }
 
@@ -96,4 +126,17 @@ void ADDFireActor::DeactiveFire()
 
 
     }
+}
+
+void ADDFireActor::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepHitResult)
+{
+    ItemWidget->SetVisibility(ESlateVisibility::Visible);
+
+    PlayerActor = OtherActor;
+}
+
+void ADDFireActor::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+    ItemWidget->SetVisibility(ESlateVisibility::Hidden);
+
 }

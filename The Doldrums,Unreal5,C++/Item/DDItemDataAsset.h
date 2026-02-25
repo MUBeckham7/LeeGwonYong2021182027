@@ -17,7 +17,8 @@ enum class EItemType :uint8
 	ClothWatch,
 	ClothBag,
 	Axe,
-	
+	Torch,
+	Machete,
 };
 
 /**

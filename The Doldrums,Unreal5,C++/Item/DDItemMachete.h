@@ -4,38 +4,28 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "NiagaraSystem.h"
-#include "NiagaraComponent.h"
-#include "DDFireActor.generated.h"
+#include "Item/DDItemDataAsset.h"
+#include "DDItemMachete.generated.h"
 
 UCLASS()
-class THEDOLDRUMS_API ADDFireActor : public AActor
+class THEDOLDRUMS_API ADDItemMachete : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	ADDFireActor();
+	ADDItemMachete();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-
 public:	
-
-	virtual void Tick(float DeltaTime) override;
-
-	UFUNCTION(BlueprintCallable,Category = "Fire")
-	void ActivateFire();
-
-	UFUNCTION(BlueprintCallable,Category = "Fire")
-	void DeactiveFire();
-
-public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Mesh)
+	TObjectPtr<class UStaticMeshComponent> Machete;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Box)
-	TObjectPtr<class UBoxComponent> TriggerFire;
+	TObjectPtr<class UBoxComponent> TriggerMachete;
 
 	UPROPERTY(VisibleAnywhere, BluePrintReadOnly, Category = Widget, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UWidgetComponent> Text;
@@ -46,24 +36,11 @@ public:
 
 	AActor* PlayerActor;
 
-private:
-	UPROPERTY(EditAnywhere,Category = "Fire")
-	UNiagaraSystem* FireSystem;
+	UPROPERTY(EditAnywhere, Category = Item)
+	UDDItemDataAsset* Item;
 
-	UPROPERTY(VisibleAnywhere,Category = "Fire")
-	UNiagaraComponent* FireComponent;
-
-	UPROPERTY(EditAnywhere, Category = "Fire|Scale")
-	FVector StartScale;
-
-	UPROPERTY(EditAnywhere, Category = "Fire|Scale")
-	FVector EndScale;
-
-	UPROPERTY(EditAnywhere, Category = "Fire|Scale", meta = (ClampMin = "0.01"))
-	float ScaleDuration;  // √  ¥‹¿ß
-
-	float  ElapsedScaleTime = 0.0f;
-	bool   bScaling = false;
+	UPROPERTY(EditAnywhere, Category = Item)
+	TSubclassOf<class UNarrativeItem> ItemDDMacheteClass;
 
 protected:
 
@@ -75,7 +52,6 @@ protected:
 
 public:
 
-	UPROPERTY()
-	TObjectPtr<class ADDFireActor> SpawnedFireActor = nullptr;
+	void OnInteract();
 
 };

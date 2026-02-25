@@ -139,6 +139,9 @@ protected:	//애니메이션 몽타주
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
 	TObjectPtr<class UAnimMontage> AxingMontage;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
+	TObjectPtr<class UAnimMontage> BornFireTorchMontage;
+
 private:	// 불피우기 관련
 
 	FTimerHandle WheelResetTimerHandle;
@@ -147,7 +150,10 @@ private:	// 불피우기 관련
 	UPROPERTY(EditAnywhere,Category = "InputWheel")
 	float WheelResetDelay = 1.0f;
 
+	UPROPERTY(EditAnywhere, Category = "Fire")
+	TSubclassOf<class ADDFireActor> FireActorBPClass;
 
+	float LastFireCheckTime = 0.0f;
 
 public:
 

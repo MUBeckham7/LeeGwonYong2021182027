@@ -8,12 +8,17 @@
 #include "DDCharacterControlData.h"
 #include "Item/DDEquipmentItemData.h"
 #include "Components/WidgetComponent.h"
+#include "UI/DDWidgetComponent.h"
+#include "UI/DDUserWidget.h"
+#include "CharacterComponent/DDCharacterStatComponent.h"
+#include "UI/DDStateWidget.h"
 
 DEFINE_LOG_CATEGORY(LogDDCharacter);
 
 // Sets default values
 ADDCharacterBase::ADDCharacterBase()
 {
+	PrimaryActorTick.bCanEverTick = true ;
 	//Pawn
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -39,7 +44,6 @@ ADDCharacterBase::ADDCharacterBase()
 	//{
 	//	
 	//}
-
 
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> CharacterBodyMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/MetaHumans/Nasim/Body/m_med_nrw_body.m_med_nrw_body'"));
@@ -75,7 +79,6 @@ ADDCharacterBase::ADDCharacterBase()
 
 		FeetMesh->SetLeaderPoseComponent(BodyMesh);
 	}
-
 	static ConstructorHelpers::FClassFinder<UAnimInstance> AnimInstanceClassRef(TEXT("/Game/Basic_Animations_UE5/ABP_DDCharacter1.ABP_DDCharacter1_C"));
 	if (AnimInstanceClassRef.Class)
 	{
@@ -105,6 +108,10 @@ ADDCharacterBase::ADDCharacterBase()
 	TakeItemActions.Add(FTakeItemDelegateWrapper(FOnTakeItemDelegate::CreateUObject(this, &ADDCharacterBase::EquipClothWatch)));
 	TakeItemActions.Add(FTakeItemDelegateWrapper(FOnTakeItemDelegate::CreateUObject(this, &ADDCharacterBase::EquipClothBag)));
 	TakeItemActions.Add(FTakeItemDelegateWrapper(FOnTakeItemDelegate::CreateUObject(this, &ADDCharacterBase::EquipAxe)));
+	TakeItemActions.Add(FTakeItemDelegateWrapper(FOnTakeItemDelegate::CreateUObject(this, &ADDCharacterBase::EquipTorch)));
+	TakeItemActions.Add(FTakeItemDelegateWrapper(FOnTakeItemDelegate::CreateUObject(this, &ADDCharacterBase::EquipMachete)));
+	TakeItemActions.Add(FTakeItemDelegateWrapper(FOnTakeItemDelegate::CreateUObject(this, &ADDCharacterBase::EquipPalm)));
+
 
 
 	//Equipment Component
@@ -137,15 +144,85 @@ ADDCharacterBase::ADDCharacterBase()
 	EquipmentAxe = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("EquipmentAxe"));
 	EquipmentAxe->SetupAttachment(GetMesh(), TEXT("hand_rAxeSocket"));
 
+	EquipmentTorchBody = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("EquipmentTorchBody"));
+	EquipmentTorchBody->SetupAttachment(GetMesh(), TEXT("hand_rTorchSocket"));
+
+	EquipmentTorchPartC = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("EquipmentTorchPartC"));
+	EquipmentTorchPartC->SetupAttachment(EquipmentTorchBody);
+
+	EquipmentTorchPartL = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("EquipmentTorchPartL"));
+	EquipmentTorchPartL->SetupAttachment(EquipmentTorchBody);
+
+	EquipmentMachete = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("EquipmentMachete"));
+	EquipmentMachete->SetupAttachment(GetMesh(), TEXT("hand_rMacheteSocket"));
+
+	//Stat Component
+	Stat = CreateDefaultSubobject<UDDCharacterStatComponent>(TEXT("Stat"));
+	Stat->SetIsReplicated(true);
+
+	////Widget Component
+	HungerStat = CreateDefaultSubobject<UDDWidgetComponent>(TEXT("Widget"));
+	static ConstructorHelpers::FClassFinder<UUserWidget> StatWidgetRef(TEXT("/Game/UI/WBP_UserState.WBP_UserState_C"));
+	if(StatWidgetRef.Class)
+	{
+		CharacterStatWidgetClass = StatWidgetRef.Class;
+
+	}
+	//
 
 
 
+}
+
+void ADDCharacterBase::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	Stat->OnHungerZero.AddUObject(this, &ADDCharacterBase::SetDead);
+	Stat->OnThirstZero.AddUObject(this, &ADDCharacterBase::SetDead);
 }
 
 void ADDCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (CharacterStatWidgetClass)
+	{
+		CharacterStatWidget = CreateWidget<UUserWidget>(GetWorld(), CharacterStatWidgetClass);
+
+		if (CharacterStatWidget)
+		{
+			UDDUserWidget* DDWidget = Cast<UDDUserWidget>(CharacterStatWidget);
+			if (DDWidget)
+			{
+				DDWidget->SetOwningActor(this);
+			}
+
+
+
+			CharacterStatWidget->AddToViewport();
+		}
+
+	}
+
+}
+
+void ADDCharacterBase::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	//Stat->DecreaseHungerStat(1.0f);
+	//Stat->DecreaseThirstStat(1.0f);
+
+	//if (HasAuthority())
+	//{
+	//	// (참고: 10.0f 대신 DeltaSeconds를 곱한 값을 사용해야 함)
+	//	float DecreaseRate = 1.0f; // 초당 1 감소
+	//	Stat->DecreaseHungerStat(DecreaseRate * DeltaSeconds);
+	//	Stat->DecreaseThirstStat(DecreaseRate * DeltaSeconds);
+	//}
+
+	//UE_LOG(LogTemp, Log, TEXT("%f"), UDSTime);
 
 }
 
@@ -172,6 +249,7 @@ void ADDCharacterBase::TakeItem(UDDItemDataAsset* InItemData)
 
 }
 
+
 void ADDCharacterBase::EquipBranch(UDDItemDataAsset* InItemData)
 {
 
@@ -181,6 +259,7 @@ void ADDCharacterBase::EquipBranch(UDDItemDataAsset* InItemData)
 		if (EquipmentItemData->EquipmentStaticMesh.IsPending())
 		{
 			EquipmentItemData->EquipmentStaticMesh.LoadSynchronous();
+			UE_LOG(LogTemp, Log, TEXT("Equip Branch"));
 		}
 		EquipmentBranch->SetStaticMesh(EquipmentItemData->EquipmentStaticMesh.Get());
 
@@ -198,6 +277,7 @@ void ADDCharacterBase::EquipWaterBottle(UDDItemDataAsset* InItemData)
 		if (EquipmentItemData->EquipmentStaticMesh.IsPending())
 		{
 			EquipmentItemData->EquipmentStaticMesh.LoadSynchronous();
+			UE_LOG(LogTemp, Log, TEXT("Equip Bottle"));
 		}
 		EquipmentWaterBottle->SetStaticMesh(EquipmentItemData->EquipmentStaticMesh.Get());
 
@@ -212,7 +292,6 @@ void ADDCharacterBase::EatFood(UDDItemDataAsset* InItemData)
 	UE_LOG(LogDDCharacter, Log, TEXT("EatFood"));
 
 }
-
 
 void ADDCharacterBase::EquipClothTShirt(UDDItemDataAsset* InItemData)
 {
@@ -276,6 +355,8 @@ void ADDCharacterBase::EquipClothBag(UDDItemDataAsset* InItemData)
 	}
 }
 
+
+
 void ADDCharacterBase::EquipAxe(UDDItemDataAsset* InItemData)
 {
 	UDDEquipmentItemData* EquipmentItemData = Cast<UDDEquipmentItemData>(InItemData);
@@ -284,6 +365,7 @@ void ADDCharacterBase::EquipAxe(UDDItemDataAsset* InItemData)
 		if (EquipmentItemData->EquipmentStaticMesh.IsPending())
 		{
 			EquipmentItemData->EquipmentStaticMesh.LoadSynchronous();
+			UE_LOG(LogTemp, Log, TEXT("Equip Axe"));
 		}
 		EquipmentAxe->SetStaticMesh(EquipmentItemData->EquipmentStaticMesh.Get());
 
@@ -293,3 +375,105 @@ void ADDCharacterBase::EquipAxe(UDDItemDataAsset* InItemData)
 	}
 }
 
+void ADDCharacterBase::EquipTorch(UDDItemDataAsset* InItemData)
+{
+	UDDEquipmentItemData* EquipmentItemData = Cast<UDDEquipmentItemData>(InItemData);
+	if (EquipmentItemData)
+	{
+		if (EquipmentItemData->EquipmentStaticMesh.IsPending())
+		{
+			EquipmentItemData->EquipmentStaticMesh.LoadSynchronous();	
+			UE_LOG(LogTemp, Log, TEXT("Equip Body"));
+		}
+
+		if (EquipmentItemData->EquipmentStaticMeshEx1.IsPending())
+		{
+			EquipmentItemData->EquipmentStaticMeshEx1.LoadSynchronous();
+			UE_LOG(LogTemp, Log, TEXT("Equip Cloth"));
+		}
+
+		if (EquipmentItemData->EquipmentStaticMeshEx2.IsPending())
+		{
+			EquipmentItemData->EquipmentStaticMeshEx2.LoadSynchronous();
+			UE_LOG(LogTemp, Log, TEXT("Equip Lope"));
+		}
+
+		EquipmentTorchBody->SetStaticMesh(EquipmentItemData->EquipmentStaticMesh.Get());
+		EquipmentTorchPartC->SetStaticMesh(EquipmentItemData->EquipmentStaticMeshEx1.Get());
+		EquipmentTorchPartL->SetStaticMesh(EquipmentItemData->EquipmentStaticMeshEx2.Get());
+
+		EquipmentNow = EItemType::Torch;
+		CurrentEquippedItem = InItemData;
+
+	}
+}
+
+void ADDCharacterBase::EquipMachete(UDDItemDataAsset* InItemData)
+{
+	UDDEquipmentItemData* EquipmentItemData = Cast<UDDEquipmentItemData>(InItemData);
+	if (EquipmentItemData)
+	{
+		if (EquipmentItemData->EquipmentStaticMesh.IsPending())
+		{
+			EquipmentItemData->EquipmentStaticMesh.LoadSynchronous();
+			UE_LOG(LogTemp, Log, TEXT("Equip Machete"));
+		}
+		EquipmentMachete->SetStaticMesh(EquipmentItemData->EquipmentStaticMesh.Get());
+
+		EquipmentNow = EItemType::Machete;
+		CurrentEquippedItem = InItemData;
+
+	}
+
+}
+
+void ADDCharacterBase::EquipPalm(UDDItemDataAsset* InItemData)
+{
+	
+	UDDEquipmentItemData* EquipmentItemData = Cast<UDDEquipmentItemData>(InItemData);
+	if (EquipmentItemData)
+	{
+
+		EquipmentNow = EItemType::Food;
+		CurrentEquippedItem = InItemData;
+	}
+
+}
+
+void ADDCharacterBase::SetupHungerCharacterWidget(UDDUserWidget* InUserWidget)
+{
+	UDDStateWidget* HungerStatWidget = Cast<UDDStateWidget>(InUserWidget);
+	if (HungerStatWidget)
+	{
+		HungerStatWidget->SetMaxHunger(Stat->GetMaxHunger());
+		HungerStatWidget->UpdateHunger(Stat->GetCurrentHunger());
+		Stat->OnHungerChanged.AddUObject(HungerStatWidget, &UDDStateWidget::UpdateHunger);
+
+	}
+
+}
+
+void ADDCharacterBase::SetupThirstCharacterWidget(UDDUserWidget* InUserWidget)
+{
+	UDDStateWidget* ThirstStatWidget = Cast<UDDStateWidget>(InUserWidget);
+	if (ThirstStatWidget)
+	{
+		ThirstStatWidget->SetMaxThirst(Stat->GetMaxThirst());
+		ThirstStatWidget->UpdateThirst(Stat->GetCurrentThirst());
+		Stat->OnThirstChanged.AddUObject(ThirstStatWidget, &UDDStateWidget::UpdateThirst);
+
+	}
+
+}
+
+void ADDCharacterBase::SetDead()
+{
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+}
+
+void ADDCharacterBase::DropItemAndClearEquippedMesh(const AActor* DI)
+{
+
+	UE_LOG(LogTemp, Log, TEXT("Drop Item In Code"));
+
+}

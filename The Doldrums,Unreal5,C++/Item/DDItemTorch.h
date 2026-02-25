@@ -4,38 +4,35 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "NiagaraSystem.h"
-#include "NiagaraComponent.h"
-#include "DDFireActor.generated.h"
+#include "Item/DDItemDataAsset.h"
+#include "DDItemTorch.generated.h"
 
 UCLASS()
-class THEDOLDRUMS_API ADDFireActor : public AActor
+class THEDOLDRUMS_API ADDItemTorch : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	ADDFireActor();
+	ADDItemTorch();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-
 public:	
 
-	virtual void Tick(float DeltaTime) override;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Mesh)
+	TObjectPtr<class UStaticMeshComponent> Torch;
 
-	UFUNCTION(BlueprintCallable,Category = "Fire")
-	void ActivateFire();
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Mesh)
+	TObjectPtr<class UStaticMeshComponent> Cloth;
 
-	UFUNCTION(BlueprintCallable,Category = "Fire")
-	void DeactiveFire();
-
-public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Mesh)
+	TObjectPtr<class UStaticMeshComponent> Lope;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Box)
-	TObjectPtr<class UBoxComponent> TriggerFire;
+	TObjectPtr<class UBoxComponent> TriggerTorch;
 
 	UPROPERTY(VisibleAnywhere, BluePrintReadOnly, Category = Widget, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UWidgetComponent> Text;
@@ -46,24 +43,12 @@ public:
 
 	AActor* PlayerActor;
 
-private:
-	UPROPERTY(EditAnywhere,Category = "Fire")
-	UNiagaraSystem* FireSystem;
+	UPROPERTY(EditAnywhere, Category = Item)
+	UDDItemDataAsset* Item;
 
-	UPROPERTY(VisibleAnywhere,Category = "Fire")
-	UNiagaraComponent* FireComponent;
+	UPROPERTY(EditAnywhere, Category = Item)
+	TSubclassOf<class UNarrativeItem> ItemDDTorchClass;
 
-	UPROPERTY(EditAnywhere, Category = "Fire|Scale")
-	FVector StartScale;
-
-	UPROPERTY(EditAnywhere, Category = "Fire|Scale")
-	FVector EndScale;
-
-	UPROPERTY(EditAnywhere, Category = "Fire|Scale", meta = (ClampMin = "0.01"))
-	float ScaleDuration;  // √  ¥‹¿ß
-
-	float  ElapsedScaleTime = 0.0f;
-	bool   bScaling = false;
 
 protected:
 
@@ -75,7 +60,9 @@ protected:
 
 public:
 
+	void OnInteract();
+
+
 	UPROPERTY()
 	TObjectPtr<class ADDFireActor> SpawnedFireActor = nullptr;
-
 };

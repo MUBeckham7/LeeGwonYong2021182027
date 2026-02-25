@@ -5,7 +5,7 @@
 #include "Character/DDCharacterPlayer.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/PrimitiveComponent.h"
-#include "DDBumpPalmTreeAnimNotify.h"
+#include "Prop/DDPalmTree.h"
 
 
 
@@ -39,41 +39,17 @@ void UDDBumpPalmTreeAnimNotify::NotifyEnd(USkeletalMeshComponent* MeshComp, UAni
 	//	FruitComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	//}
 
-	UCapsuleComponent* CapsuleComp = Owner->FindComponentByClass<UCapsuleComponent>();
-
-	if (CapsuleComp)
+	if (Pawn)
 	{
-		TArray<UPrimitiveComponent*> OverlappingComponents;
-		CapsuleComp->GetOverlappingComponents(OverlappingComponents);
-
-		for (UPrimitiveComponent* OverlapComp : OverlappingComponents)
+		TArray<AActor*>Result;
+		Pawn->GetOverlappingActors(Result, AActor::StaticClass());
+		for (auto TmpActor : Result)
 		{
-			if (OverlapComp)
+			if (ADDPalmTree* PalmTree = Cast<ADDPalmTree>(TmpActor))
 			{
-				UE_LOG(LogTemp, Log, TEXT("Overlapping component: %s"), *OverlapComp->GetName());
-
-				TArray<USceneComponent*> ChildComps;
-				OverlapComp->GetChildrenComponents(true, ChildComps);
-				for (USceneComponent* Child : ChildComps)
-				{
-					// Fruit가 UStaticMeshComponent라면 캐스팅
-					UStaticMeshComponent* FruitMesh = Cast<UStaticMeshComponent>(Child);
-					if (FruitMesh && FruitMesh->GetName().Contains(TEXT("Fruit")))
-					{
-						// 물리 시뮬레이션 켜기
-						FruitMesh->SetSimulatePhysics(true);
-						// 필요 시 분리 (부모로부터 Detach)
-						FruitMesh->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
-						// 충돌 활성화
-						FruitMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-					}
-				}
-
-
+				PalmTree->FallFruit();
 			}
 		}
 	}
-
-
 
 }

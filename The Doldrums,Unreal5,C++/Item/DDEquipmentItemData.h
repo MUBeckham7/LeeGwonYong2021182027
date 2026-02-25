@@ -26,5 +26,11 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = Equipment)
 	TSoftObjectPtr<UStaticMesh> EquipmentStaticMesh;
+
+	UPROPERTY(EditAnywhere, Category = Equipment)
+	TSoftObjectPtr<UStaticMesh> EquipmentStaticMeshEx1;
+
+	UPROPERTY(EditAnywhere, Category = Equipment)
+	TSoftObjectPtr<UStaticMesh> EquipmentStaticMeshEx2;
 	
 };

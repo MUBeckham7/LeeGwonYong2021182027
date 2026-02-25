@@ -10,7 +10,7 @@ public class TheDoldrums : ModuleRules
 
 		PublicIncludePaths.AddRange(new string[]{ "TheDoldrums"});
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "CinematicCamera" , "UMG" ,"GameplayCameras", "GeometryScriptingEditor" ,"MeshDescription", "MeshConversion" , "GeometryScriptingCore", "GeometryFramework" , "GeometryCore" , "Niagara","GameplayTags","CommonUI", "NarrativeInventory","NarrativeEquipment"});
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "CinematicCamera" , "UMG" ,"GameplayCameras", "GeometryScriptingEditor" ,"MeshDescription", "MeshConversion" , "GeometryScriptingCore", "GeometryFramework" , "GeometryCore" , "Niagara","GameplayTags","CommonUI", "NarrativeInventory","NarrativeEquipment" });
         // "MeshDescription", "MeshConversion" , "GeometryCore" , "GeometryScriptingCore" ,"GeometryFramework","NarrativeInventory" , "GameplayTags"
         //PrivateDependencyModuleNames.AddRange(new string[] {});
 

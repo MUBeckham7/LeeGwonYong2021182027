@@ -124,24 +124,24 @@ ADDCharacterBase::ADDCharacterBase()
 	EquipmentWaterBottle->SetupAttachment(GetMesh(), TEXT("hand_rWaterBottleSocket"));
 
 	EquipmentTShirt = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("EquipmentTShirt"));
-	EquipmentTShirt->SetupAttachment(BodyMesh); // BodyMeshø° ∫Œ¬¯
-	EquipmentTShirt->SetLeaderPoseComponent(BodyMesh); // ∫ª µø±‚»≠
+	EquipmentTShirt->SetupAttachment(BodyMesh); // BodyMeshÏóê Î∂ÄÏ∞©
+	EquipmentTShirt->SetLeaderPoseComponent(BodyMesh); // Î≥∏ ÎèôÍ∏∞Ìôî
 
 	EquipmentPants = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("EquipmentPants"));
-	EquipmentPants->SetupAttachment(BodyMesh); // BodyMeshø° ∫Œ¬¯
-	EquipmentPants->SetLeaderPoseComponent(BodyMesh); // ∫ª µø±‚»≠
+	EquipmentPants->SetupAttachment(BodyMesh); // BodyMeshÏóê Î∂ÄÏ∞©
+	EquipmentPants->SetLeaderPoseComponent(BodyMesh); // Î≥∏ ÎèôÍ∏∞Ìôî
 
 	EquipmentWatch = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("EquipmentWatch"));
-	EquipmentWatch->SetupAttachment(BodyMesh); // BodyMeshø° ∫Œ¬¯
-	EquipmentWatch->SetLeaderPoseComponent(BodyMesh); // ∫ª µø±‚»≠
+	EquipmentWatch->SetupAttachment(BodyMesh); // BodyMeshÏóê Î∂ÄÏ∞©
+	EquipmentWatch->SetLeaderPoseComponent(BodyMesh); // Î≥∏ ÎèôÍ∏∞Ìôî
 
 	EquipmentBagBody = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("EquipmentBagBody"));
-	EquipmentBagBody->SetupAttachment(BodyMesh); // BodyMeshø° ∫Œ¬¯
-	EquipmentBagBody->SetLeaderPoseComponent(BodyMesh); // ∫ª µø±‚»≠
+	EquipmentBagBody->SetupAttachment(BodyMesh); // BodyMeshÏóê Î∂ÄÏ∞©
+	EquipmentBagBody->SetLeaderPoseComponent(BodyMesh); // Î≥∏ ÎèôÍ∏∞Ìôî
 
 	EquipmentBagTie = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("EquipmentBagTie"));
-	EquipmentBagTie->SetupAttachment(BodyMesh); // BodyMeshø° ∫Œ¬¯
-	EquipmentBagTie->SetLeaderPoseComponent(BodyMesh); // ∫ª µø±‚»≠
+	EquipmentBagTie->SetupAttachment(BodyMesh); // BodyMeshÏóê Î∂ÄÏ∞©
+	EquipmentBagTie->SetLeaderPoseComponent(BodyMesh); // Î≥∏ ÎèôÍ∏∞Ìôî
 
 	EquipmentAxe = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("EquipmentAxe"));
 	EquipmentAxe->SetupAttachment(GetMesh(), TEXT("hand_rAxeSocket"));
@@ -218,8 +218,8 @@ void ADDCharacterBase::Tick(float DeltaSeconds)
 
 	//if (HasAuthority())
 	//{
-	//	// (¬¸∞Ì: 10.0f ¥ÎΩ≈ DeltaSeconds∏¶ ∞ˆ«— ∞™¿ª ªÁøÎ«ÿæﬂ «‘)
-	//	float DecreaseRate = 1.0f; // √ ¥Á 1 ∞®º“
+	//	// (Ï∞∏Í≥†: 10.0f ÎåÄÏã† DeltaSecondsÎ•º Í≥±Ìïú Í∞íÏùÑ ÏÇ¨Ïö©Ìï¥Ïïº Ìï®)
+	//	float DecreaseRate = 1.0f; // Ï¥àÎãπ 1 Í∞êÏÜå
 	//	Stat->DecreaseHungerStat(DecreaseRate * DeltaSeconds);
 	//	Stat->DecreaseThirstStat(DecreaseRate * DeltaSeconds);
 	//}
@@ -254,6 +254,11 @@ void ADDCharacterBase::TakeItem(UDDItemDataAsset* InItemData)
 
 void ADDCharacterBase::EquipBranch(UDDItemDataAsset* InItemData)
 {
+	if (CurrentEquippedItem && CurrentEquippedItem != InItemData)
+	{
+		DropItemAndClearEquippedMesh(nullptr);
+	}
+
 
 	UDDEquipmentItemData* EquipmentItemData = Cast<UDDEquipmentItemData>(InItemData);
 	if (EquipmentItemData)
@@ -279,6 +284,11 @@ void ADDCharacterBase::EquipBranch(UDDItemDataAsset* InItemData)
 
 void ADDCharacterBase::EquipWaterBottle(UDDItemDataAsset* InItemData)
 {
+	if (CurrentEquippedItem && CurrentEquippedItem != InItemData)
+	{
+		DropItemAndClearEquippedMesh(nullptr);
+	}
+
 	UDDEquipmentItemData* EquipmentItemData = Cast<UDDEquipmentItemData>(InItemData);
 	if (EquipmentItemData)
 	{
@@ -372,6 +382,11 @@ void ADDCharacterBase::EquipClothBag(UDDItemDataAsset* InItemData)
 
 void ADDCharacterBase::EquipAxe(UDDItemDataAsset* InItemData)
 {
+	if (CurrentEquippedItem && CurrentEquippedItem != InItemData)
+	{
+		DropItemAndClearEquippedMesh(nullptr);
+	}
+
 	UDDEquipmentItemData* EquipmentItemData = Cast<UDDEquipmentItemData>(InItemData);
 	if (EquipmentItemData)
 	{
@@ -395,6 +410,11 @@ void ADDCharacterBase::EquipAxe(UDDItemDataAsset* InItemData)
 
 void ADDCharacterBase::EquipTorch(UDDItemDataAsset* InItemData)
 {
+	if (CurrentEquippedItem && CurrentEquippedItem != InItemData)
+	{
+		DropItemAndClearEquippedMesh(nullptr);
+	}
+
 	UDDEquipmentItemData* EquipmentItemData = Cast<UDDEquipmentItemData>(InItemData);
 	if (EquipmentItemData)
 	{
@@ -434,6 +454,11 @@ void ADDCharacterBase::EquipTorch(UDDItemDataAsset* InItemData)
 
 void ADDCharacterBase::EquipMachete(UDDItemDataAsset* InItemData)
 {
+	if (CurrentEquippedItem && CurrentEquippedItem != InItemData)
+	{
+		DropItemAndClearEquippedMesh(nullptr);
+	}
+
 	UDDEquipmentItemData* EquipmentItemData = Cast<UDDEquipmentItemData>(InItemData);
 	if (EquipmentItemData)
 	{
@@ -458,6 +483,11 @@ void ADDCharacterBase::EquipMachete(UDDItemDataAsset* InItemData)
 
 void ADDCharacterBase::EquipPalm(UDDItemDataAsset* InItemData)
 {
+	if (CurrentEquippedItem && CurrentEquippedItem != InItemData)
+	{
+		DropItemAndClearEquippedMesh(nullptr);
+	}
+
 	
 	UDDEquipmentItemData* EquipmentItemData = Cast<UDDEquipmentItemData>(InItemData);
 	if (EquipmentItemData)
@@ -502,7 +532,13 @@ void ADDCharacterBase::SetDead()
 
 void ADDCharacterBase::DropItemAndClearEquippedMesh(const AActor* DI)
 {
+	if (!CurrentEquippedItem)
+	{
+		UE_LOG(LogTemp, Log, TEXT("DropItemAndClearEquippedMesh: No equipped item to clear."));
+		return;
+	}
 
+<<<<<<< HEAD
 	if (!CurrentEquippedItem)
 	{
 		UE_LOG(LogTemp, Log, TEXT("DropItemAndClearEquippedMesh: No Equiped item to Clear"));
@@ -511,6 +547,8 @@ void ADDCharacterBase::DropItemAndClearEquippedMesh(const AActor* DI)
 	}
 
 
+=======
+>>>>>>> 17b9f6f552458531a21f95d3bc25ebefa8a279e1
 	const UDDEquipmentItemData* EquippedData = Cast<UDDEquipmentItemData>(CurrentEquippedItem);
 	if (DI && EquippedData && EquippedData->ItemActorClass && !DI->IsA(EquippedData->ItemActorClass))
 	{
@@ -518,7 +556,10 @@ void ADDCharacterBase::DropItemAndClearEquippedMesh(const AActor* DI)
 		return;
 	}
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 17b9f6f552458531a21f95d3bc25ebefa8a279e1
 	switch (EquipmentNow)
 	{
 	case EItemType::Branch:
@@ -540,6 +581,7 @@ void ADDCharacterBase::DropItemAndClearEquippedMesh(const AActor* DI)
 		}
 		break;
 	case EItemType::Torch:
+<<<<<<< HEAD
 		if (EquipmentTorchPartC)
 		{
 			TArray<USceneComponent*> AttachedChildren;
@@ -567,6 +609,8 @@ void ADDCharacterBase::DropItemAndClearEquippedMesh(const AActor* DI)
 			}
 		}
 
+=======
+>>>>>>> 17b9f6f552458531a21f95d3bc25ebefa8a279e1
 		if (EquipmentTorchBody)
 		{
 			EquipmentTorchBody->SetStaticMesh(nullptr);
@@ -596,9 +640,14 @@ void ADDCharacterBase::DropItemAndClearEquippedMesh(const AActor* DI)
 		break;
 	}
 
+<<<<<<< HEAD
 	UE_LOG(LogTemp, Log, TEXT("Drop Item In Code"));
 	CurrentEquippedItem = nullptr;
 	UE_LOG(LogTemp, Log, TEXT("DropItemAndClearEquippedMesh: equipped item has been cleared."));
 
+=======
+	CurrentEquippedItem = nullptr;
+	UE_LOG(LogTemp, Log, TEXT("DropItemAndClearEquippedMesh: equipped item has been cleared."));
+>>>>>>> 17b9f6f552458531a21f95d3bc25ebefa8a279e1
 
 }

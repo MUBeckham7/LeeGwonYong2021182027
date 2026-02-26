@@ -12,6 +12,8 @@
 #include "UI/DDUserWidget.h"
 #include "CharacterComponent/DDCharacterStatComponent.h"
 #include "UI/DDStateWidget.h"
+#include "Animation/DDAnimInstance.h"
+#include "Niagara/DDFireActor.h"
 
 DEFINE_LOG_CATEGORY(LogDDCharacter);
 
@@ -256,6 +258,12 @@ void ADDCharacterBase::EquipBranch(UDDItemDataAsset* InItemData)
 	UDDEquipmentItemData* EquipmentItemData = Cast<UDDEquipmentItemData>(InItemData);
 	if (EquipmentItemData)
 	{
+
+		if (CurrentEquippedItem && CurrentEquippedItem != InItemData)
+		{
+			DropItemAndClearEquippedMesh(nullptr);
+		}
+
 		if (EquipmentItemData->EquipmentStaticMesh.IsPending())
 		{
 			EquipmentItemData->EquipmentStaticMesh.LoadSynchronous();
@@ -274,6 +282,11 @@ void ADDCharacterBase::EquipWaterBottle(UDDItemDataAsset* InItemData)
 	UDDEquipmentItemData* EquipmentItemData = Cast<UDDEquipmentItemData>(InItemData);
 	if (EquipmentItemData)
 	{
+		if (CurrentEquippedItem && CurrentEquippedItem != InItemData)
+		{
+			DropItemAndClearEquippedMesh(nullptr);
+		}
+
 		if (EquipmentItemData->EquipmentStaticMesh.IsPending())
 		{
 			EquipmentItemData->EquipmentStaticMesh.LoadSynchronous();
@@ -362,6 +375,11 @@ void ADDCharacterBase::EquipAxe(UDDItemDataAsset* InItemData)
 	UDDEquipmentItemData* EquipmentItemData = Cast<UDDEquipmentItemData>(InItemData);
 	if (EquipmentItemData)
 	{
+		if (CurrentEquippedItem && CurrentEquippedItem != InItemData)
+		{
+			DropItemAndClearEquippedMesh(nullptr);
+		}
+
 		if (EquipmentItemData->EquipmentStaticMesh.IsPending())
 		{
 			EquipmentItemData->EquipmentStaticMesh.LoadSynchronous();
@@ -380,6 +398,12 @@ void ADDCharacterBase::EquipTorch(UDDItemDataAsset* InItemData)
 	UDDEquipmentItemData* EquipmentItemData = Cast<UDDEquipmentItemData>(InItemData);
 	if (EquipmentItemData)
 	{
+
+		if (CurrentEquippedItem && CurrentEquippedItem != InItemData)
+		{
+			DropItemAndClearEquippedMesh(nullptr);
+		}
+
 		if (EquipmentItemData->EquipmentStaticMesh.IsPending())
 		{
 			EquipmentItemData->EquipmentStaticMesh.LoadSynchronous();	
@@ -413,6 +437,11 @@ void ADDCharacterBase::EquipMachete(UDDItemDataAsset* InItemData)
 	UDDEquipmentItemData* EquipmentItemData = Cast<UDDEquipmentItemData>(InItemData);
 	if (EquipmentItemData)
 	{
+		if (CurrentEquippedItem && CurrentEquippedItem != InItemData)
+		{
+			DropItemAndClearEquippedMesh(nullptr);
+		}
+
 		if (EquipmentItemData->EquipmentStaticMesh.IsPending())
 		{
 			EquipmentItemData->EquipmentStaticMesh.LoadSynchronous();
@@ -474,6 +503,102 @@ void ADDCharacterBase::SetDead()
 void ADDCharacterBase::DropItemAndClearEquippedMesh(const AActor* DI)
 {
 
+	if (!CurrentEquippedItem)
+	{
+		UE_LOG(LogTemp, Log, TEXT("DropItemAndClearEquippedMesh: No Equiped item to Clear"));
+
+		return;
+	}
+
+
+	const UDDEquipmentItemData* EquippedData = Cast<UDDEquipmentItemData>(CurrentEquippedItem);
+	if (DI && EquippedData && EquippedData->ItemActorClass && !DI->IsA(EquippedData->ItemActorClass))
+	{
+		UE_LOG(LogTemp, Log, TEXT("DropItemAndClearEquippedMesh: DI does not match current equipped item."));
+		return;
+	}
+
+
+	switch (EquipmentNow)
+	{
+	case EItemType::Branch:
+		if (EquipmentBranch)
+		{
+			EquipmentBranch->SetStaticMesh(nullptr);
+		}
+		break;
+	case EItemType::WaterBottle:
+		if (EquipmentWaterBottle)
+		{
+			EquipmentWaterBottle->SetStaticMesh(nullptr);
+		}
+		break;
+	case EItemType::Axe:
+		if (EquipmentAxe)
+		{
+			EquipmentAxe->SetStaticMesh(nullptr);
+		}
+		break;
+	case EItemType::Torch:
+		if (EquipmentTorchPartC)
+		{
+			TArray<USceneComponent*> AttachedChildren;
+			EquipmentTorchPartC->GetChildrenComponents(true, AttachedChildren);
+
+			for (USceneComponent* ChildComponent : AttachedChildren)
+			{
+				if (!ChildComponent)
+				{
+					continue;
+				}
+
+				if (ADDFireActor* AttachedFire = Cast<ADDFireActor>(ChildComponent->GetOwner()))
+				{
+					AttachedFire->DeactiveFire();
+					AttachedFire->Destroy();
+
+
+					if (UDDAnimInstance* AnimInstance = Cast<UDDAnimInstance>(BodyMesh->GetAnimInstance()))
+					{
+						AnimInstance->bGrabbedTorch = false;
+					}
+
+				}
+			}
+		}
+
+		if (EquipmentTorchBody)
+		{
+			EquipmentTorchBody->SetStaticMesh(nullptr);
+		}
+		if (EquipmentTorchPartC)
+		{
+			EquipmentTorchPartC->SetStaticMesh(nullptr);
+		}
+		if (EquipmentTorchPartL)
+		{
+			EquipmentTorchPartL->SetStaticMesh(nullptr);
+		}
+		break;
+	case EItemType::Machete:
+		if (EquipmentMachete)
+		{
+			EquipmentMachete->SetStaticMesh(nullptr);
+		}
+		break;
+	case EItemType::Food:
+		if (EquipmentFoodPalm)
+		{
+			EquipmentFoodPalm->SetStaticMesh(nullptr);
+		}
+		break;
+	default:
+		break;
+	}
+
 	UE_LOG(LogTemp, Log, TEXT("Drop Item In Code"));
+	CurrentEquippedItem = nullptr;
+	UE_LOG(LogTemp, Log, TEXT("DropItemAndClearEquippedMesh: equipped item has been cleared."));
+
 
 }

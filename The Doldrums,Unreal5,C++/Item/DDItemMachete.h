@@ -42,6 +42,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = Item)
 	TSubclassOf<class UNarrativeItem> ItemDDMacheteClass;
 
+	UPROPERTY()
+	TObjectPtr<class ADDPlayerController> CachedPlayerController;
+
 protected:
 
 	UFUNCTION()

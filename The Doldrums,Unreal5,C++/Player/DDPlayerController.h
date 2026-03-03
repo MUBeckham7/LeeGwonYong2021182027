@@ -9,6 +9,7 @@
 /**
  * 
  */
+
 UCLASS()
 class THEDOLDRUMS_API ADDPlayerController : public APlayerController
 {
@@ -29,7 +30,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	TObjectPtr<class USkeletalMeshComponent> BagMeshPart2;
 
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category = "Inventory")
+	bool bOpenInventory = false;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory")
-	bool bInventoryOpen = false;
+	bool bCanOpenInventoryNearItem = false;
 
 };

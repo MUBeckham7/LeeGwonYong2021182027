@@ -575,9 +575,6 @@ void ADDCharacterPlayer::UseItem(const FInputActionValue& Value)
 
 void ADDCharacterPlayer::OpenInventory(const FInputActionValue& Value)
 {
-	//InventoryWidget->SetVisibility(ESlateVisibility::Visible);
-
-
 }
 
 void ADDCharacterPlayer::DropItem(const FInputActionInstance& Instance)

@@ -35,6 +35,9 @@ public:
 
 	AActor* PlayerActor;
 
+	UPROPERTY()
+	TObjectPtr<class ADDPlayerController> CachedPlayerController;
+
 	UPROPERTY(EditAnywhere,Category = Item)
 	UDDItemDataAsset* Item;
 

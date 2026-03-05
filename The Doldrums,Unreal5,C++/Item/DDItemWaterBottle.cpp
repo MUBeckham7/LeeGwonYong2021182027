@@ -6,8 +6,10 @@
 #include "Collision/DDCollision.h"
 #include "Components/WidgetComponent.h"
 #include "Interface/DDCharacterItemInterface.h"
+#include "Player/DDPlayerController.h"
 #include "State/DDPlayerState.h"
 #include "NarrativeItem.h"
+#include "Kismet/GameplayStatics.h"
 
 
 // Sets default values
@@ -58,6 +60,8 @@ void ADDItemWaterBottle::BeginPlay()
 {
 	Super::BeginPlay();
 
+	CachedPlayerController = Cast<ADDPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
+
 	if (InteractionItemWidgetClass)
 	{
 		ItemWidget = CreateWidget<UUserWidget>(GetWorld(), InteractionItemWidgetClass);
@@ -73,14 +77,33 @@ void ADDItemWaterBottle::BeginPlay()
 
 void ADDItemWaterBottle::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepHitResult)
 {
+	if (!ItemWidget)
+		return;
+
+	if (CachedPlayerController->bOpenInventory)
+	{
+		ItemWidget->SetVisibility(ESlateVisibility::Hidden);
+		return;
+	}
+
 	ItemWidget->SetVisibility(ESlateVisibility::Visible);
 
 	PlayerActor = OtherActor;
+
+	if (CachedPlayerController && OtherActor == CachedPlayerController->GetPawn())
+	{
+		CachedPlayerController->bCanOpenInventoryNearItem = true;
+	}
 }
 
 void ADDItemWaterBottle::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	ItemWidget->SetVisibility(ESlateVisibility::Hidden);
+
+	if (CachedPlayerController && OtherActor == CachedPlayerController->GetPawn())
+	{
+		CachedPlayerController->bCanOpenInventoryNearItem = false;
+	}
 }
 
 void ADDItemWaterBottle::OnInteract()

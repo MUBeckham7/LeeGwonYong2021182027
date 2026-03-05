@@ -6,8 +6,10 @@
 #include "Components/WidgetComponent.h"
 #include "Components/BoxComponent.h"
 #include "Interface/DDCharacterItemInterface.h"
+#include "Player/DDPlayerController.h"
 #include "State/DDPlayerState.h"
 #include "NarrativeItem.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ADDItemAxe::ADDItemAxe()
@@ -54,6 +56,9 @@ ADDItemAxe::ADDItemAxe()
 void ADDItemAxe::BeginPlay()
 {
 	Super::BeginPlay();
+
+	CachedPlayerController = Cast<ADDPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
+
 	if (InteractionItemWidgetClass)
 	{
 		ItemWidget = CreateWidget<UUserWidget>(GetWorld(), InteractionItemWidgetClass);
@@ -68,14 +73,33 @@ void ADDItemAxe::BeginPlay()
 
 void ADDItemAxe::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepHitResult)
 {
+	if (!ItemWidget)
+		return;
+
+	if (CachedPlayerController->bOpenInventory)
+	{
+		ItemWidget->SetVisibility(ESlateVisibility::Hidden);
+		return;
+	}
+
 	ItemWidget->SetVisibility(ESlateVisibility::Visible);
 
 	PlayerActor = OtherActor;
+
+	if (CachedPlayerController && OtherActor == CachedPlayerController->GetPawn())
+	{
+		CachedPlayerController->bCanOpenInventoryNearItem = true;
+	}
 }
 
 void ADDItemAxe::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	ItemWidget->SetVisibility(ESlateVisibility::Hidden);
+
+	if (CachedPlayerController && OtherActor == CachedPlayerController->GetPawn())
+	{
+		CachedPlayerController->bCanOpenInventoryNearItem = false;
+	}
 }
 
 void ADDItemAxe::OnInteract()
@@ -116,4 +140,3 @@ void ADDItemAxe::OnInteract()
 		}
 	}
 }
-

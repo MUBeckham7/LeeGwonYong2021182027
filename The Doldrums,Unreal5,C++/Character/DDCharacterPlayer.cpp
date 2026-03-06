@@ -368,8 +368,8 @@ void ADDCharacterPlayer::InterActionFun(const FInputActionValue& Value)
 			}
 			else if (TmpActor->IsA(ADDPalmTree::StaticClass()))
 			{
-				ADDPalmTree* Palm = Cast<ADDPalmTree>(TmpActor);
-				Palm->OnInteract();
+				ADDPalmTree* PalmTree = Cast<ADDPalmTree>(TmpActor);
+				PalmTree->OnInteract();
 			}
 			else if (TmpActor->IsA(ADDTent::StaticClass()))
 			{
@@ -486,6 +486,21 @@ void ADDCharacterPlayer::InterActionFun(const FInputActionValue& Value)
 			}
 			else if (TmpActor->IsA(ADDPalm::StaticClass()))
 			{
+
+				switch (EquipmentNow)
+				{
+				case EItemType::Machete:
+
+					if (UDDAnimInstance* AnimInstance = Cast<UDDAnimInstance>(BodyMesh->GetAnimInstance()))
+					{
+						AnimInstance->Montage_Play(CoconutChopMontage);
+					}
+					return;
+
+					break;
+				}
+
+
 				ADDPalm* Palm = Cast<ADDPalm>(TmpActor);
 				Palm->OnInteract();
 
@@ -568,8 +583,6 @@ void ADDCharacterPlayer::UseItem(const FInputActionValue& Value)
 			
 		}
 		break;
-
-
 	}
 }
 

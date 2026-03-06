@@ -142,6 +142,9 @@ protected:	//애니메이션 몽타주
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
 	TObjectPtr<class UAnimMontage> BornFireTorchMontage;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
+	TObjectPtr<class UAnimMontage> CoconutChopMontage;
+
 private:	// 불피우기 관련
 
 	FTimerHandle WheelResetTimerHandle;
@@ -171,7 +174,6 @@ public:
 	void ResetWheelCount();
 
 	void AxeAction();
-
 
 //Inventory 
 	protected:

@@ -10,6 +10,7 @@
 #include "NarrativeItem.h"
 #include "Player/DDPlayerController.h"
 #include "Kismet/GameplayStatics.h"
+#include "GameFramework/Pawn.h"
 #include "Item/DDOpendPalm.h"
 
 // Sets default values
@@ -122,5 +123,37 @@ void ADDOpendPalm::OnOverlapEndOpendPalm(UPrimitiveComponent* OverlappedComp, AA
 
 void ADDOpendPalm::OnInteract()
 {
+	if (nullptr == Item)
+	{
+		Destroy();
+		return;
+	}
 
+	if (ItemWidget && ItemWidget->IsVisible())
+	{
+		if (PlayerActor)
+		{
+			OpendPalmPart1->SetHiddenInGame(true);
+			OpendPalmPart2->SetHiddenInGame(true);
+			SetActorEnableCollision(false);
+
+			IDDCharacterItemInterface* OverlappingPawn = Cast<IDDCharacterItemInterface>(PlayerActor);
+			if (OverlappingPawn)
+			{
+				OverlappingPawn->TakeItem(Item);
+			}
+
+			APawn* Pawn = Cast<APawn>(PlayerActor);
+			if (Pawn)
+			{
+				ADDPlayerState* MyPs = Pawn->GetPlayerState<ADDPlayerState>();
+				if (MyPs && MyPs->Inventory)
+				{
+					MyPs->Inventory->TryAddItemFromClass(ItemDDOpendPalmClass, 1);
+				}
+			}
+
+			Destroy();
+		}
+	}
 }

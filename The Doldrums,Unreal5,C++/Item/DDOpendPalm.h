@@ -48,6 +48,11 @@ public:
 	UPROPERTY(EditAnywhere, Category = Item)
 	TSubclassOf<class UNarrativeItem> ItemDDOpendPalmClass;
 
+	UPROPERTY(EditAnywhere, Category = Interaction)
+	float InteractEnableDelay = 0.5f;
+
+	float InteractEnableTime = 0.0f;
+
 protected:
 
 	UFUNCTION()

@@ -12,6 +12,7 @@
 #include "NarrativeItem.h"
 #include "Player/DDPlayerController.h"
 #include "Kismet/GameplayStatics.h"
+#include "Item/DDOpendPalm.h"
 
 ADDPalm::ADDPalm()
 {
@@ -61,6 +62,8 @@ ADDPalm::ADDPalm()
 		ItemDDPalmClass = InvPalmDataAssetRef.Class;
 	}
 
+	OpenPalmClass = ADDOpendPalm::StaticClass();
+
 }
 
 void ADDPalm::BeginPlay()
@@ -83,7 +86,7 @@ void ADDPalm::BeginPlay()
 	UStaticMeshComponent* Mesh = Fruit;
 	if (!Mesh) return;
 
-	// simulate physics´Â ¾ÆÁ÷ ²û
+	// simulate physics
 	Mesh->SetSimulatePhysics(false);
 
 	Fruit->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
@@ -155,6 +158,19 @@ void ADDPalm::StartFall()
 
 	Mesh->WakeRigidBody();
 
+}
+
+void ADDPalm::ReplaceWithOpenPalm()
+{
+	if (!GetWorld() || !OpenPalmClass)
+	{
+		Destroy();
+		return;
+	}
+
+	const FTransform SpawnTransform = GetActorTransform();
+	GetWorld()->SpawnActor<ADDOpendPalm>(OpenPalmClass, SpawnTransform);
+	Destroy();
 }
 
 void ADDPalm::OnInteract()

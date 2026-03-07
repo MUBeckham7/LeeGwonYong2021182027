@@ -12,6 +12,7 @@
  */
 
 class ADDPalmTree;
+class ADDOpendPalm;
 
 
 UCLASS()
@@ -54,6 +55,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = Item)
 	TSubclassOf<class UNarrativeItem> ItemDDPalmClass;
 
+	UPROPERTY(EditAnywhere, Category = Palm)
+	TSubclassOf<ADDOpendPalm> OpenPalmClass;
+
 protected:
 
 	UFUNCTION()
@@ -76,6 +80,8 @@ public:
 	bool bIsFalling = false;
 
 	void StartFall();
+
+	void ReplaceWithOpenPalm();
 
 
 };

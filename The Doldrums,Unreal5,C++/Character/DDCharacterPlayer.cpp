@@ -25,6 +25,7 @@
 #include <Item/DDItemMachete.h>
 #include <Item/DDItemTorch.h>
 #include <Item/DDPalm.h>
+#include <Item/DDOpendPalm.h>
 #include <Prop/DDGrassOne.h>
 #include <Prop/DDGeneratedDynamicMeshActorLog.h>
 #include <Item/DDGeneratedDynamicMeshFlint.h>
@@ -483,6 +484,13 @@ void ADDCharacterPlayer::InterActionFun(const FInputActionValue& Value)
 					break;
 
 				}
+			}
+			else if (TmpActor->IsA(ADDOpendPalm::StaticClass()))
+			{
+				ADDOpendPalm* OpendPalm = Cast<ADDOpendPalm>(TmpActor);
+				OpendPalm->OnInteract();
+
+				CurrentInventoryItemClass = OpendPalm->ItemDDOpendPalmClass;
 			}
 			else if (TmpActor->IsA(ADDPalm::StaticClass()))
 			{

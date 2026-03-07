@@ -10,6 +10,7 @@
 #include "NarrativeItem.h"
 #include "Player/DDPlayerController.h"
 #include "Kismet/GameplayStatics.h"
+#include "GameFramework/Pawn.h"
 #include "Item/DDOpendPalm.h"
 
 // Sets default values
@@ -74,6 +75,7 @@ void ADDOpendPalm::BeginPlay()
 	Super::BeginPlay();
 	
 	CachedPlayerController = Cast<ADDPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
+	InteractEnableTime = GetWorld()->GetTimeSeconds() + InteractEnableDelay;
 
 	if (InteractionItemWidgetClass)
 	{
@@ -89,24 +91,28 @@ void ADDOpendPalm::BeginPlay()
 
 void ADDOpendPalm::OnOverlapBeginOpendPalm(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepHitResult)
 {
-	if (!ItemWidget)
+	if (!ItemWidget || !CachedPlayerController)
 		return;
+
+	if (OtherActor != CachedPlayerController->GetPawn())
+		return;
+
+	PlayerActor = OtherActor;
+	CachedPlayerController->bCanOpenInventoryNearItem = true;
 
 	if (CachedPlayerController->bOpenInventory)
 	{
 		ItemWidget->SetVisibility(ESlateVisibility::Hidden);
+		return;
 	}
 
+	if (GetWorld() && GetWorld()->GetTimeSeconds() < InteractEnableTime)
+	{
+		ItemWidget->SetVisibility(ESlateVisibility::Hidden);
+		return;
+	}
 
 	ItemWidget->SetVisibility(ESlateVisibility::Visible);
-
-	PlayerActor = OtherActor;
-
-	if (CachedPlayerController && OtherActor == CachedPlayerController->GetPawn())
-	{
-		CachedPlayerController->bCanOpenInventoryNearItem = true;
-	}
-
 }
 
 void ADDOpendPalm::OnOverlapEndOpendPalm(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
@@ -116,11 +122,49 @@ void ADDOpendPalm::OnOverlapEndOpendPalm(UPrimitiveComponent* OverlappedComp, AA
 	if (CachedPlayerController && OtherActor == CachedPlayerController->GetPawn())
 	{
 		CachedPlayerController->bCanOpenInventoryNearItem = false;
+		PlayerActor = nullptr;
 	}
 
 }
 
 void ADDOpendPalm::OnInteract()
 {
+	if (nullptr == Item)
+	{
+		Destroy();
+		return;
+	}
 
+	if (GetWorld() && GetWorld()->GetTimeSeconds() < InteractEnableTime)
+	{
+		return;
+	}
+
+	if (ItemWidget && ItemWidget->IsVisible())
+	{
+		if (PlayerActor)
+		{
+			OpendPalmPart1->SetHiddenInGame(true);
+			OpendPalmPart2->SetHiddenInGame(true);
+			SetActorEnableCollision(false);
+
+			IDDCharacterItemInterface* OverlappingPawn = Cast<IDDCharacterItemInterface>(PlayerActor);
+			if (OverlappingPawn)
+			{
+				OverlappingPawn->TakeItem(Item);
+			}
+
+			APawn* Pawn = Cast<APawn>(PlayerActor);
+			if (Pawn)
+			{
+				ADDPlayerState* MyPs = Pawn->GetPlayerState<ADDPlayerState>();
+				if (MyPs && MyPs->Inventory)
+				{
+					MyPs->Inventory->TryAddItemFromClass(ItemDDOpendPalmClass, 1);
+				}
+			}
+
+			Destroy();
+		}
+	}
 }

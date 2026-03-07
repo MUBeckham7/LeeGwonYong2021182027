@@ -9,7 +9,8 @@
 UENUM(BlueprintType)
 enum class EItemType :uint8
 {
-	Branch=0,
+	None = 0,
+	Branch = 1,
 	WaterBottle,
 	Food,
 	ClothTShirt,

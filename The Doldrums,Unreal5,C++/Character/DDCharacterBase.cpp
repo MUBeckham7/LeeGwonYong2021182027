@@ -102,18 +102,18 @@ ADDCharacterBase::ADDCharacterBase()
 
 
 	//Item Actions
-	TakeItemActions.Add(FTakeItemDelegateWrapper(FOnTakeItemDelegate::CreateUObject(this, &ADDCharacterBase::EquipBranch)));
-	TakeItemActions.Add(FTakeItemDelegateWrapper(FOnTakeItemDelegate::CreateUObject(this, &ADDCharacterBase::EquipWaterBottle)));
-	TakeItemActions.Add(FTakeItemDelegateWrapper(FOnTakeItemDelegate::CreateUObject(this, &ADDCharacterBase::EatFood)));
-	TakeItemActions.Add(FTakeItemDelegateWrapper(FOnTakeItemDelegate::CreateUObject(this, &ADDCharacterBase::EquipClothTShirt)));
-	TakeItemActions.Add(FTakeItemDelegateWrapper(FOnTakeItemDelegate::CreateUObject(this, &ADDCharacterBase::EquipClothPants)));
-	TakeItemActions.Add(FTakeItemDelegateWrapper(FOnTakeItemDelegate::CreateUObject(this, &ADDCharacterBase::EquipClothWatch)));
-	TakeItemActions.Add(FTakeItemDelegateWrapper(FOnTakeItemDelegate::CreateUObject(this, &ADDCharacterBase::EquipClothBag)));
-	TakeItemActions.Add(FTakeItemDelegateWrapper(FOnTakeItemDelegate::CreateUObject(this, &ADDCharacterBase::EquipAxe)));
-	TakeItemActions.Add(FTakeItemDelegateWrapper(FOnTakeItemDelegate::CreateUObject(this, &ADDCharacterBase::EquipTorch)));
-	TakeItemActions.Add(FTakeItemDelegateWrapper(FOnTakeItemDelegate::CreateUObject(this, &ADDCharacterBase::EquipMachete)));
-	TakeItemActions.Add(FTakeItemDelegateWrapper(FOnTakeItemDelegate::CreateUObject(this, &ADDCharacterBase::EquipPalm)));
+	TakeItemActions.Add(EItemType::Branch, FTakeItemDelegateWrapper(FOnTakeItemDelegate::CreateUObject(this, &ADDCharacterBase::EquipBranch)));
+	TakeItemActions.Add(EItemType::WaterBottle, FTakeItemDelegateWrapper(FOnTakeItemDelegate::CreateUObject(this, &ADDCharacterBase::EquipWaterBottle)));
+	TakeItemActions.Add(EItemType::Food, FTakeItemDelegateWrapper(FOnTakeItemDelegate::CreateUObject(this, &ADDCharacterBase::EatFood)));
+	TakeItemActions.Add(EItemType::ClothTShirt, FTakeItemDelegateWrapper(FOnTakeItemDelegate::CreateUObject(this, &ADDCharacterBase::EquipClothTShirt)));
+	TakeItemActions.Add(EItemType::ClothPants, FTakeItemDelegateWrapper(FOnTakeItemDelegate::CreateUObject(this, &ADDCharacterBase::EquipClothPants)));
+	TakeItemActions.Add(EItemType::ClothWatch, FTakeItemDelegateWrapper(FOnTakeItemDelegate::CreateUObject(this, &ADDCharacterBase::EquipClothWatch)));
+	TakeItemActions.Add(EItemType::ClothBag, FTakeItemDelegateWrapper(FOnTakeItemDelegate::CreateUObject(this, &ADDCharacterBase::EquipClothBag)));
+	TakeItemActions.Add(EItemType::Axe, FTakeItemDelegateWrapper(FOnTakeItemDelegate::CreateUObject(this, &ADDCharacterBase::EquipAxe)));
+	TakeItemActions.Add(EItemType::Torch, FTakeItemDelegateWrapper(FOnTakeItemDelegate::CreateUObject(this, &ADDCharacterBase::EquipTorch)));
+	TakeItemActions.Add(EItemType::Machete, FTakeItemDelegateWrapper(FOnTakeItemDelegate::CreateUObject(this, &ADDCharacterBase::EquipMachete)));
 
+	EquipmentNow = EItemType::None;
 
 
 	//Equipment Component
@@ -124,24 +124,24 @@ ADDCharacterBase::ADDCharacterBase()
 	EquipmentWaterBottle->SetupAttachment(GetMesh(), TEXT("hand_rWaterBottleSocket"));
 
 	EquipmentTShirt = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("EquipmentTShirt"));
-	EquipmentTShirt->SetupAttachment(BodyMesh); // BodyMesh¿¡ ºÎÂø
-	EquipmentTShirt->SetLeaderPoseComponent(BodyMesh); // º» µ¿±âÈ­
+	EquipmentTShirt->SetupAttachment(BodyMesh); // BodyMeshì— ë¶€ì°©
+	EquipmentTShirt->SetLeaderPoseComponent(BodyMesh); // ë³¸ ë™ê¸°í™”
 
 	EquipmentPants = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("EquipmentPants"));
-	EquipmentPants->SetupAttachment(BodyMesh); // BodyMesh¿¡ ºÎÂø
-	EquipmentPants->SetLeaderPoseComponent(BodyMesh); // º» µ¿±âÈ­
+	EquipmentPants->SetupAttachment(BodyMesh); // BodyMeshì— ë¶€ì°©
+	EquipmentPants->SetLeaderPoseComponent(BodyMesh); // ë³¸ ë™ê¸°í™”
 
 	EquipmentWatch = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("EquipmentWatch"));
-	EquipmentWatch->SetupAttachment(BodyMesh); // BodyMesh¿¡ ºÎÂø
-	EquipmentWatch->SetLeaderPoseComponent(BodyMesh); // º» µ¿±âÈ­
+	EquipmentWatch->SetupAttachment(BodyMesh); // BodyMeshì— ë¶€ì°©
+	EquipmentWatch->SetLeaderPoseComponent(BodyMesh); // ë³¸ ë™ê¸°í™”
 
 	EquipmentBagBody = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("EquipmentBagBody"));
-	EquipmentBagBody->SetupAttachment(BodyMesh); // BodyMesh¿¡ ºÎÂø
-	EquipmentBagBody->SetLeaderPoseComponent(BodyMesh); // º» µ¿±âÈ­
+	EquipmentBagBody->SetupAttachment(BodyMesh); // BodyMeshì— ë¶€ì°©
+	EquipmentBagBody->SetLeaderPoseComponent(BodyMesh); // ë³¸ ë™ê¸°í™”
 
 	EquipmentBagTie = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("EquipmentBagTie"));
-	EquipmentBagTie->SetupAttachment(BodyMesh); // BodyMesh¿¡ ºÎÂø
-	EquipmentBagTie->SetLeaderPoseComponent(BodyMesh); // º» µ¿±âÈ­
+	EquipmentBagTie->SetupAttachment(BodyMesh); // BodyMeshì— ë¶€ì°©
+	EquipmentBagTie->SetLeaderPoseComponent(BodyMesh); // ë³¸ ë™ê¸°í™”
 
 	EquipmentAxe = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("EquipmentAxe"));
 	EquipmentAxe->SetupAttachment(GetMesh(), TEXT("hand_rAxeSocket"));
@@ -218,9 +218,18 @@ void ADDCharacterBase::Tick(float DeltaSeconds)
 
 	//if (HasAuthority())
 	//{
-	//	// (Âü°í: 10.0f ´ë½Å DeltaSeconds¸¦ °öÇÑ °ªÀ» »ç¿ëÇØ¾ß ÇÔ)
-	//	float DecreaseRate = 1.0f; // ÃÊ´ç 1 °¨¼Ò
-	//	Stat->DecreaseHungerStat(DecreaseRate * DeltaSeconds);
+	//	// (ì°¸ê³ : 10.0f ëŒ€ì‹  DeltaSecondsë¥¼ ê³±í•œ ê°’ì„ ì‚¬ìš©í•´ì•¼ í•¨)
+	if (InItemData == nullptr || InItemData->Type == EItemType::None)
+		return;
+	}
+
+	if (const FTakeItemDelegateWrapper* Action = TakeItemActions.Find(InItemData->Type))
+	{
+		Action->ItemDelegate.ExecuteIfBound(InItemData);
+	}
+	else
+	{
+		UE_LOG(LogDDCharacter, Warning, TEXT("No TakeItem action registered for item type: %d"), static_cast<uint8>(InItemData->Type));
 	//	Stat->DecreaseThirstStat(DecreaseRate * DeltaSeconds);
 	//}
 

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Item/DDItemDataAsset.h"
 #include "DDOpendPalm.generated.h"
 
 UCLASS()
@@ -20,7 +21,45 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Mesh)
+	TObjectPtr<class UStaticMeshComponent> OpendPalmPart1;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Mesh)
+	TObjectPtr<class UStaticMeshComponent> OpendPalmPart2;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Box)
+	TObjectPtr<class UBoxComponent>TriggerOpendPalm;
+
+	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = Widget, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UWidgetComponent> Text;
+
+	TSubclassOf<UUserWidget> InteractionItemWidgetClass;
+
+	UUserWidget* ItemWidget;
+
+	AActor* PlayerActor;
+
+	UPROPERTY()
+	TObjectPtr<class ADDPlayerController> CachedPlayerController;
+
+	UPROPERTY(EditAnywhere, Category = Item)
+	UDDItemDataAsset* Item;
+
+	UPROPERTY(EditAnywhere, Category = Item)
+	TSubclassOf<class UNarrativeItem> ItemDDOpendPalmClass;
+
+protected:
+
+	UFUNCTION()
+	void OnOverlapBeginOpendPalm(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepHitResult);
+
+	UFUNCTION()
+	void OnOverlapEndOpendPalm(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+
+public:
+
+	void OnInteract();
+
 
 };

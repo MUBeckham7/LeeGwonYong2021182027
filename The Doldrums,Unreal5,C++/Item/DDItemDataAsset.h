@@ -18,7 +18,8 @@ enum class EItemType :uint8
 	ClothBag,
 	Axe,
 	Torch,
-	Machete,
+	Machete,				//여기다가 계속 추가
+	None,
 };
 
 /**

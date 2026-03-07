@@ -524,18 +524,21 @@ void ADDCharacterBase::DropItemAndClearEquippedMesh(const AActor* DI)
 	case EItemType::Branch:
 		if (EquipmentBranch)
 		{
+			EquipmentNow = EItemType::None;
 			EquipmentBranch->SetStaticMesh(nullptr);
 		}
 		break;
 	case EItemType::WaterBottle:
 		if (EquipmentWaterBottle)
 		{
+			EquipmentNow = EItemType::None;
 			EquipmentWaterBottle->SetStaticMesh(nullptr);
 		}
 		break;
 	case EItemType::Axe:
 		if (EquipmentAxe)
 		{
+			EquipmentNow = EItemType::None;
 			EquipmentAxe->SetStaticMesh(nullptr);
 		}
 		break;
@@ -569,6 +572,7 @@ void ADDCharacterBase::DropItemAndClearEquippedMesh(const AActor* DI)
 
 		if (EquipmentTorchBody)
 		{
+			EquipmentNow = EItemType::None;
 			EquipmentTorchBody->SetStaticMesh(nullptr);
 		}
 		if (EquipmentTorchPartC)
@@ -583,12 +587,14 @@ void ADDCharacterBase::DropItemAndClearEquippedMesh(const AActor* DI)
 	case EItemType::Machete:
 		if (EquipmentMachete)
 		{
+			EquipmentNow = EItemType::None;
 			EquipmentMachete->SetStaticMesh(nullptr);
 		}
 		break;
 	case EItemType::Food:
 		if (EquipmentFoodPalm)
 		{
+			EquipmentNow = EItemType::None;
 			EquipmentFoodPalm->SetStaticMesh(nullptr);
 		}
 		break;

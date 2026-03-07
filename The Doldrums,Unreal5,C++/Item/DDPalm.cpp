@@ -168,8 +168,11 @@ void ADDPalm::ReplaceWithOpenPalm()
 		return;
 	}
 
-	const FTransform SpawnTransform = GetActorTransform();
-	GetWorld()->SpawnActor<ADDOpendPalm>(OpenPalmClass, SpawnTransform);
+	const FVector SpawnLocation = GetActorLocation();
+	const FRotator SpawnRotation = FRotator::ZeroRotator;
+
+	FActorSpawnParameters SpawnParams;
+	GetWorld()->SpawnActor<ADDOpendPalm>(OpenPalmClass, SpawnLocation, SpawnRotation, SpawnParams);
 	Destroy();
 }
 
@@ -212,4 +215,3 @@ void ADDPalm::OnInteract()
 		}
 	}
 }
-

@@ -82,7 +82,7 @@ protected:
 protected:
 
 	UPROPERTY()
-	TMap<EItemType, FTakeItemDelegateWrapper> TakeItemActions;
+	TArray<FTakeItemDelegateWrapper> TakeItemActions;
 
 	virtual void TakeItem(class UDDItemDataAsset* InItemData) override;
 	virtual void EquipBranch(class UDDItemDataAsset* InItemData);

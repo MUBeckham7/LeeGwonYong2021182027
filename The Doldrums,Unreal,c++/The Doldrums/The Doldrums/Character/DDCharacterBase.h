@@ -177,5 +177,8 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Drop|Equipment")
 	void DropItemAndClearEquippedMesh(const AActor* DI);
 
+	UFUNCTION(BlueprintCallable,Category = "Inventory|Use")
+	void DistinguishItem(class UNarrativeItem* Item);
+
 
 };

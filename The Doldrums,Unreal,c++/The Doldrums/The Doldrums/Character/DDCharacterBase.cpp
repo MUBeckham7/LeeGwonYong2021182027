@@ -608,3 +608,9 @@ void ADDCharacterBase::DropItemAndClearEquippedMesh(const AActor* DI)
 
 
 }
+
+void ADDCharacterBase::DistinguishItem(class UNarrativeItem* Item)
+{
+	
+
+}

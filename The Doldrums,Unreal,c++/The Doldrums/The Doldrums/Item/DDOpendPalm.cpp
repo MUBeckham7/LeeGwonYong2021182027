@@ -40,8 +40,8 @@ ADDOpendPalm::ADDOpendPalm()
 	OpendPalmPart2->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
 
 
-	//OpendPalmPart1->SetRelativeScale3D(FVector(0.14f, 0.14f, 0.14f));
-	//OpendPalmPart2->SetRelativeScale3D(FVector(0.14f, 0.14f, 0.14f));
+	OpendPalmPart1->SetRelativeScale3D(FVector(0.14f, 0.14f, 0.14f));
+	OpendPalmPart2->SetRelativeScale3D(FVector(0.14f, 0.14f, 0.14f));
 	TriggerOpendPalm->OnComponentBeginOverlap.AddDynamic(this, &ADDOpendPalm::OnOverlapBeginOpendPalm);
 	TriggerOpendPalm->OnComponentEndOverlap.AddDynamic(this, &ADDOpendPalm::OnOverlapEndOpendPalm);
 
@@ -140,31 +140,32 @@ void ADDOpendPalm::OnInteract()
 		return;
 	}
 
-	if (ItemWidget && ItemWidget->IsVisible())
+	if (!CachedPlayerController)
 	{
-		if (PlayerActor)
-		{
-			OpendPalmPart1->SetHiddenInGame(true);
-			OpendPalmPart2->SetHiddenInGame(true);
-			SetActorEnableCollision(false);
-
-			IDDCharacterItemInterface* OverlappingPawn = Cast<IDDCharacterItemInterface>(PlayerActor);
-			if (OverlappingPawn)
-			{
-				OverlappingPawn->TakeItem(Item);
-			}
-
-			APawn* Pawn = Cast<APawn>(PlayerActor);
-			if (Pawn)
-			{
-				ADDPlayerState* MyPs = Pawn->GetPlayerState<ADDPlayerState>();
-				if (MyPs && MyPs->Inventory)
-				{
-					MyPs->Inventory->TryAddItemFromClass(ItemDDOpendPalmClass, 1);
-				}
-			}
-
-			Destroy();
-		}
+		return;
 	}
+
+	APawn* Pawn = CachedPlayerController->GetPawn();
+	if (!Pawn || !TriggerOpendPalm || !TriggerOpendPalm->IsOverlappingActor(Pawn))
+	{
+		return;
+	}
+
+	OpendPalmPart1->SetHiddenInGame(true);
+	OpendPalmPart2->SetHiddenInGame(true);
+	SetActorEnableCollision(false);
+
+	IDDCharacterItemInterface* OverlappingPawn = Cast<IDDCharacterItemInterface>(Pawn);
+	if (OverlappingPawn)
+	{
+		OverlappingPawn->TakeItem(Item);
+	}
+
+	ADDPlayerState* MyPs = Pawn->GetPlayerState<ADDPlayerState>();
+	if (MyPs && MyPs->Inventory)
+	{
+		MyPs->Inventory->TryAddItemFromClass(ItemDDOpendPalmClass, 1);
+	}
+
+	Destroy();
 }

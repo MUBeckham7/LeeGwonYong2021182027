@@ -180,5 +180,8 @@ protected:
 	UFUNCTION(BlueprintCallable,Category = "Inventory|Use")
 	void DistinguishItem(class UNarrativeItem* Item);
 
+	UFUNCTION()
+	void ResolveItemTypeFromNarrativeItem(const UNarrativeItem* Item);
+
 
 };

@@ -18,51 +18,6 @@
 
 DEFINE_LOG_CATEGORY(LogDDCharacter);
 
-namespace
-{
-	EItemType ResolveItemTypeFromNarrativeItem(const UNarrativeItem* Item)
-	{
-
-		const FString NormalizedDisplayName = Item->DisplayName.ToString().ToLower();
-		
-		if (NormalizedDisplayName.Contains(TEXT("OpendPalm")))
-		{
-			UE_LOG(LogTemp, Warning, TEXT("OpendPalmUsed!!"));
-
-
-			return EItemType::None;
-		}
-
-
-
-		return EItemType::None;
-	}
-
-
-
-
-	/*UDDItemDataAsset* LoadDataAssetForType(const EItemType ItemType)
-	{
-		switch (ItemType)
-		{
-		case EItemType::Branch:
-			return LoadObject<UDDItemDataAsset>(nullptr, TEXT("/Game/Item/Equipment/DDIW_Branch.DDIW_Branch"));
-		case EItemType::WaterBottle:
-			return LoadObject<UDDItemDataAsset>(nullptr, TEXT("/Game/Item/Equipment/DDIW_WaterBottle.DDIW_WaterBottle"));
-		case EItemType::Food:
-			return LoadObject<UDDItemDataAsset>(nullptr, TEXT("/Game/Item/Food/DDIF_Palm.DDIF_Palm"));
-		case EItemType::Axe:
-			return LoadObject<UDDItemDataAsset>(nullptr, TEXT("/Game/Item/Equipment/DDIW_Axe.DDIW_Axe"));
-		case EItemType::Torch:
-			return LoadObject<UDDItemDataAsset>(nullptr, TEXT("/Game/Item/Equipment/DDIW_Torch.DDIW_Torch"));
-		case EItemType::Machete:
-			return LoadObject<UDDItemDataAsset>(nullptr, TEXT("/Game/Item/Equipment/DDIW_Machete.DDIW_Machete"));
-		default:
-			return nullptr;
-		}
-	}*/
-}
-
 
 // Sets default values
 ADDCharacterBase::ADDCharacterBase()
@@ -653,7 +608,6 @@ void ADDCharacterBase::DropItemAndClearEquippedMesh(const AActor* DI)
 	CurrentEquippedItem = nullptr;
 	UE_LOG(LogTemp, Log, TEXT("DropItemAndClearEquippedMesh: equipped item has been cleared."));
 
-
 }
 
 void ADDCharacterBase::DistinguishItem(class UNarrativeItem* Item)
@@ -664,13 +618,13 @@ void ADDCharacterBase::DistinguishItem(class UNarrativeItem* Item)
 		return;
 	}
 
-	const EItemType ItemType = ResolveItemTypeFromNarrativeItem(Item);
+	ResolveItemTypeFromNarrativeItem(Item);
 
-	if (ItemType == EItemType::None)
-	{
-		UE_LOG(LogDDCharacter, Warning,TEXT("DistinguishItem: failed to determine item type for %s."),*Item->DisplayName.ToString());
-		return;
-	}
+
+
+
+
+
 
 	/*UDDItemDataAsset* ItemData = LoadDataAssetForType(ItemType);
 	if (!ItemData)
@@ -680,5 +634,20 @@ void ADDCharacterBase::DistinguishItem(class UNarrativeItem* Item)
 	}
 
 	TakeItem(ItemData);*/
+
+}
+
+void ADDCharacterBase::ResolveItemTypeFromNarrativeItem(const UNarrativeItem* Item)
+{
+	const FString NormalizedDisplayName = Item->DisplayName.ToString().ToLower();
+		
+	if (NormalizedDisplayName.Contains(TEXT("OpendPalm")))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("OpendPalmUsed!!"));
+
+		Stat->IncreaseHungerStat(10.0f);
+		Stat->IncreaseThirstStat(10.0f);
+
+	}
 
 }

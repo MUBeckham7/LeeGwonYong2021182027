@@ -14,8 +14,55 @@
 #include "UI/DDStateWidget.h"
 #include "Animation/DDAnimInstance.h"
 #include "Niagara/DDFireActor.h"
+#include "NarrativeItem.h"
 
 DEFINE_LOG_CATEGORY(LogDDCharacter);
+
+namespace
+{
+	EItemType ResolveItemTypeFromNarrativeItem(const UNarrativeItem* Item)
+	{
+
+		const FString NormalizedDisplayName = Item->DisplayName.ToString().ToLower();
+		
+		if (NormalizedDisplayName.Contains(TEXT("OpendPalm")))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("OpendPalmUsed!!"));
+
+
+			return EItemType::None;
+		}
+
+
+
+		return EItemType::None;
+	}
+
+
+
+
+	/*UDDItemDataAsset* LoadDataAssetForType(const EItemType ItemType)
+	{
+		switch (ItemType)
+		{
+		case EItemType::Branch:
+			return LoadObject<UDDItemDataAsset>(nullptr, TEXT("/Game/Item/Equipment/DDIW_Branch.DDIW_Branch"));
+		case EItemType::WaterBottle:
+			return LoadObject<UDDItemDataAsset>(nullptr, TEXT("/Game/Item/Equipment/DDIW_WaterBottle.DDIW_WaterBottle"));
+		case EItemType::Food:
+			return LoadObject<UDDItemDataAsset>(nullptr, TEXT("/Game/Item/Food/DDIF_Palm.DDIF_Palm"));
+		case EItemType::Axe:
+			return LoadObject<UDDItemDataAsset>(nullptr, TEXT("/Game/Item/Equipment/DDIW_Axe.DDIW_Axe"));
+		case EItemType::Torch:
+			return LoadObject<UDDItemDataAsset>(nullptr, TEXT("/Game/Item/Equipment/DDIW_Torch.DDIW_Torch"));
+		case EItemType::Machete:
+			return LoadObject<UDDItemDataAsset>(nullptr, TEXT("/Game/Item/Equipment/DDIW_Machete.DDIW_Machete"));
+		default:
+			return nullptr;
+		}
+	}*/
+}
+
 
 // Sets default values
 ADDCharacterBase::ADDCharacterBase()
@@ -611,6 +658,27 @@ void ADDCharacterBase::DropItemAndClearEquippedMesh(const AActor* DI)
 
 void ADDCharacterBase::DistinguishItem(class UNarrativeItem* Item)
 {
-	
+	if (!Item)
+	{
+		UE_LOG(LogDDCharacter, Warning, TEXT("DistinguishItem: Item is Null."));
+		return;
+	}
+
+	const EItemType ItemType = ResolveItemTypeFromNarrativeItem(Item);
+
+	if (ItemType == EItemType::None)
+	{
+		UE_LOG(LogDDCharacter, Warning,TEXT("DistinguishItem: failed to determine item type for %s."),*Item->DisplayName.ToString());
+		return;
+	}
+
+	/*UDDItemDataAsset* ItemData = LoadDataAssetForType(ItemType);
+	if (!ItemData)
+	{
+		UE_LOG(LogDDCharacter, Warning, TEXT("DistinguishItem: no data asset mapping for item type %d (%s)."), static_cast<int32>(ItemType), *GetNameSafe(Item->GetClass()));
+		return;
+	}
+
+	TakeItem(ItemData);*/
 
 }

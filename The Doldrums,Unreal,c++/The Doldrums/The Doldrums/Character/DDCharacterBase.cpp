@@ -648,6 +648,53 @@ void ADDCharacterBase::ResolveItemTypeFromNarrativeItem(const UNarrativeItem* It
 		Stat->IncreaseHungerStat(10.0f);
 		Stat->IncreaseThirstStat(10.0f);
 
+		return;
 	}
+
+	//음식관련은 return을 줘서 안꼬이게 할려면 위에다가 food
+
+	if (CurrentEquippedItem)
+	{
+		DropItemAndClearEquippedMesh(nullptr);
+	}
+
+	const TCHAR* ItemDataAssetPath = nullptr;
+
+	if (NormalizedDisplayName.Contains(TEXT("branch")))
+	{
+		ItemDataAssetPath = TEXT("/Game/Item/Equipment/DDIW_Branch.DDIW_Branch");
+	}
+	else if (NormalizedDisplayName.Contains(TEXT("waterbottle")) || NormalizedDisplayName.Contains(TEXT("water bottle")))
+	{
+		ItemDataAssetPath = TEXT("/Game/Item/Equipment/DDIW_WaterBottle.DDIW_WaterBottle");
+	}
+	else if (NormalizedDisplayName.Contains(TEXT("axe")))
+	{
+		ItemDataAssetPath = TEXT("/Game/Item/Equipment/DDIW_Axe.DDIW_Axe");
+	}
+	else if (NormalizedDisplayName.Contains(TEXT("torch")))
+	{
+		ItemDataAssetPath = TEXT("/Game/Item/Equipment/DDIW_Torch.DDIW_Torch");
+	}
+	else if (NormalizedDisplayName.Contains(TEXT("machete")))
+	{
+		ItemDataAssetPath = TEXT("/Game/Item/Equipment/DDIW_Machete.DDIW_Machete");
+	}
+
+	if (!ItemDataAssetPath)
+	{
+		UE_LOG(LogDDCharacter, Warning, TEXT("DistinguishItem: unsupported item for equip (%s)."), *Item->DisplayName.ToString());
+		return;
+	}
+
+	UDDItemDataAsset* ItemData = LoadObject<UDDItemDataAsset>(nullptr, ItemDataAssetPath);
+	if (!ItemData)
+	{
+		UE_LOG(LogDDCharacter, Warning, TEXT("DistinguishItem: failed to load item data asset path (%s)."), ItemDataAssetPath);
+		return;
+	}
+
+	TakeItem(ItemData);
+
 
 }

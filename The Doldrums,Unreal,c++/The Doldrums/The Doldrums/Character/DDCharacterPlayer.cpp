@@ -25,6 +25,7 @@
 #include <Item/DDItemMachete.h>
 #include <Item/DDItemTorch.h>
 #include <Item/DDPalm.h>
+#include <Item/DDGDTreeBase.h>
 #include <Item/DDOpendPalm.h>
 #include <Prop/DDGrassOne.h>
 #include <Prop/DDGeneratedDynamicMeshActorLog.h>
@@ -371,6 +372,12 @@ void ADDCharacterPlayer::InterActionFun(const FInputActionValue& Value)
 			{
 				ADDPalmTree* PalmTree = Cast<ADDPalmTree>(TmpActor);
 				PalmTree->OnInteract();
+			}
+			else if (TmpActor->IsA(ADDNewPalmTree::StaticClass()))
+			{
+				ADDNewPalmTree* PalmTree = Cast<ADDNewPalmTree>(TmpActor);
+				PalmTree->OnInteract();
+
 			}
 			else if (TmpActor->IsA(ADDTent::StaticClass()))
 			{
@@ -850,6 +857,18 @@ void ADDCharacterPlayer::AxeAction()
 
 					GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 				}
+
+				if (ADDGDTreeBase* Tree = Cast<ADDGDTreeBase>(TmpActor))
+				{
+					Tree->DynamicMeshComp->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
+					Tree->DynamicMeshComp->SetNotifyRigidBodyCollision(true);
+					Tree->DynamicMeshComp->SetGenerateOverlapEvents(true);
+
+					Tree->SubtractWithTool(EquipmentAxe, EquipmentAxe->GetComponentLocation());
+
+					GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+				}
+
 			}
 
 		}

@@ -5,12 +5,14 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Item/DDItemDataAsset.h"
+#include "DDNewPalmTree.h"
 #include "DDPalm.generated.h"
 
 /**
  * 
  */
 
+class ADDNewPalmTree;
 class ADDPalmTree;
 class ADDOpendPalm;
 
@@ -72,6 +74,8 @@ public:
 	void OnInteract();
 
 	ADDPalmTree* OwnerTree;
+
+	ADDNewPalmTree* NewOwnerTree;
 
 	UPROPERTY()
 	bool bShouldFall = false;
